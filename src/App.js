@@ -1,33 +1,28 @@
 import React from 'react';
+import Input from './Form/Input';
+import useForm from './Hooks/useForm';
 
 const App = () => {
-  const [produto, setProduto] = React.useState('');
+  const cep = useForm('cep');
 
-  function handleChange({ target }) {
-    setProduto(target.value);
+  function handleSubmit(event) {
+    event.preventDefault();
+    if (cep.validate()) {
+      console.log('Enviar');
+    } else {
+      console.log('Não enviar');
+    }
   }
-
   return (
-    <form>
-      {produto}
-      <label>
-        <input
-          type="radio"
-          onChange={handleChange}
-          checked={produto === 'smartphone'}
-          value="smartphone"
-        />
-        Smartphone
-      </label>
-      <label>
-        <input
-          type="radio"
-          onChange={handleChange}
-          checked={produto === 'notebook'}
-          value="notebook"
-        />
-        Notebook
-      </label>
+    <form onSubmit={handleSubmit}>
+      <Input
+        label="CEP"
+        id="cep"
+        type="text"
+        placeholder="00000-000"
+        {...cep}
+      />
+      <button>Enviar</button>
     </form>
   );
 };
