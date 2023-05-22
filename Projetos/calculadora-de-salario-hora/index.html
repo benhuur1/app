@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/x-icon" href="/assets/Josebenhur.svg" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/css/globals.css" />
+    <title>Cálculadora de salário hora | José Ben Hur</title>
+    <meta
+      name="description"
+      content="A Cálculadora de salário hora é uma ferramenta que permite aos funcionários calcular o valor ganho por hora com base no salário bruto, nos dias trabalhados no mês e nas horas trabalhadas diariamente. Ao fornecer essas informações, a calculadora realiza o cálculo necessário e fornece o valor da hora trabalhada."
+    />
+    <!-- Meta tags para compartilhamento em redes sociais facebook  -->
+    <meta
+      property="og:title"
+      content="Cálculadora de salário hora | José Ben Hur"
+    />
+    <meta
+      property="og:description"
+      content="A Cálculadora de salário hora é uma ferramenta que permite aos funcionários calcular o valor ganho por hora com base no salário bruto, nos dias trabalhados no mês e nas horas trabalhadas diariamente. Ao fornecer essas informações, a calculadora realiza o cálculo necessário e fornece o valor da hora trabalhada."
+    />
+    <meta property="og:image" content="/assets/calculadora.jpeg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:url" content="https://www.josebenhur.com.br/" />
+    <meta property="og:type" content="website" />
+    <!-- Meta tags para compartilhamento em redes sociais twitter  -->
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:creator" content="José Ben Hur" />
+    <meta name="twitter:title" content="José Ben Hur Title" />
+    <meta
+      name="twitter:description"
+      content="A Cálculadora de salário hora é uma ferramenta que permite aos funcionários calcular o valor ganho por hora com base no salário bruto, nos dias trabalhados no mês e nas horas trabalhadas diariamente. Ao fornecer essas informações, a calculadora realiza o cálculo necessário e fornece o valor da hora trabalhada."
+    />
+  </head>
+  <body>
+    <div id="app-calc">
+      <!-- Header site -->
+      <header-site></header-site>
+      <div class="container">
+        <div class="row">
+          <div class="col">
+            <h1>Cálculadora de salário hora</h1>
+            <!-- Adicione uma mensagem de erro -->
+            <p v-if="!isValidInput">
+              Por favor, preencha todos os campos corretamente.
+            </p>
+            <div>
+              <form @submit.prevent="handleSubmit">
+                <fieldset
+                  title="Salário bruto é aquele registrado na Carteira de Trabalho e Previdência Social(CTPS)"
+                >
+                  <label htmlFor="salario">Salário Bruto:</label>
+                  <input
+                    type="number"
+                    pattern="[0-9]+"
+                    title="Digite apenas números"
+                    placeholder="Digite aqui seu Salário (ex: 2500)"
+                    name="salario"
+                    id="salario"
+                    required
+                    v-model="SalarioBruto"
+                  />
+                </fieldset>
+                <fieldset
+                  title="Informar a quantidade de dias trabalhados no mês (se não souber insira 22)."
+                >
+                  <label htmlFor="diasTrabalhados"
+                    >Dias trabalhados no mês:</label
+                  >
+                  <input
+                    type="number"
+                    pattern="[0-9]+"
+                    title="Digite apenas números"
+                    placeholder="Digite aqui os dias trabalhados no mês"
+                    name="diasTrabalhados"
+                    id="diasTrabalhados"
+                    min="0"
+                    max="31"
+                    required
+                    v-model="DiasTrabalhados"
+                  />
+                </fieldset>
+                <fieldset
+                  title="Informar a quantidade de horas trabalhadas no dia."
+                >
+                  <label htmlFor="horasTrabalhadas">Horas Trabalhadas:</label>
+                  <input
+                    type="number"
+                    pattern="[0-9]+"
+                    title="Digite apenas números"
+                    min="0"
+                    max="24"
+                    placeholder="Digite aqui as horas trabalhadas no dia"
+                    name="horasTrabalhadas"
+                    id="horasTrabalhadas"
+                    required
+                    v-model="HorasTrabalhadas"
+                  />
+                </fieldset>
+                <!-- Adicione uma seleção de moeda -->
+                <select v-model="moedaSelecionada">
+                  <option value="BRL">BRL</option>
+                  <option value="USD">USD</option>
+                  <!-- Adicione outras opções de moeda aqui -->
+                </select>
+                <button class="button" type="submit">Calcular</button>
+                <button class="button" @click="limparValores" type="reset">
+                  Limpar
+                </button>
+              </form>
+              <!-- Exiba o resultado formatado -->
+              <p>
+                Valor da hora trabalhada: {{formatarMoeda(ValorDaHoraTrabalhada, moedaSelecionada) }}
+              </p>
+              <p>Salário Bruto: {{ formatarMoedaBRL(SalarioBruto) }}</p>
+              <p>Dias Trabalhados: {{ DiasTrabalhados }}</p>
+              <p>HorasTrabalhadas: {{ HorasTrabalhadas }}</p>
+              <p>
+                Valor da hora trabalhada:
+                {{formatarMoeda(ValorDaHoraTrabalhada, moedaSelecionada) }}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- scripts JS  -->
+      <script defer type="module" src="/js/App.js"></script>
+    </div>
+  </body>
+</html>
