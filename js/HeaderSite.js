@@ -46,16 +46,16 @@ const Header = {
     return {
       isMenuOpen: false,
       links: [
-        { url: "/", value: "Home", active: false, submenu: null },
-        { url: "/sobre", value: "Sobre", active: false, submenu: null },
-        { url: "/contato", value: "Contato", active: false, submenu: null },
+        { url: "./", value: "Home", active: false, submenu: null },
+        { url: "./sobre", value: "Sobre", active: false, submenu: null },
+        { url: "./contato", value: "Contato", active: false, submenu: null },
         {
-          url: "/projetos",
+          url: "./projetos",
           value: "Projetos",
           active: false,
           submenu: [
             {
-              url: "/projetos/calculadora-de-salario-hora",
+              url: "./projetos/calculadora-de-salario-hora",
               value: "Cálculadora de salário hora",
               active: false,
             },
