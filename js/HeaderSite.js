@@ -1,6 +1,6 @@
 const link = document.createElement("link");
 link.rel = "stylesheet";
-link.href = "/css/header.css";
+link.href = "./css/header.css";
 document.head.appendChild(link);
 
 const Header = {
