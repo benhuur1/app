@@ -2,7 +2,7 @@ const Header = {
   template: `
     <header>
       <div class="container-header">
-        <h1><a href="/">José Ben Hur</a></h1>
+        <h1><a href="https://benhuur1.github.io/app/">José Ben Hur</a></h1>
         <button @click="toggleMenu" class="buttonHamburguer" :class="{menuOpen: isMenuOpen}" :aria-expanded="isMenuOpen" :aria-label="getMenuButtonLabel()">
           <span class="headerHamburguer" :class="{activeMenu: isMenuOpen}"></span>
         </button>
@@ -41,16 +41,16 @@ const Header = {
     return {
       isMenuOpen: false,
       links: [
-        { url: "./", value: "Home", active: false, submenu: null },
-        { url: "./sobre", value: "Sobre", active: false, submenu: null },
-        { url: "./contato", value: "Contato", active: false, submenu: null },
+        { url: "https://benhuur1.github.io/app/", value: "Home", active: false, submenu: null },
+        { url: "https://benhuur1.github.io/app/sobre", value: "Sobre", active: false, submenu: null },
+        { url: "https://benhuur1.github.io/app/contato", value: "Contato", active: false, submenu: null },
         {
-          url: "./projetos",
+          url: "https://benhuur1.github.io/app/projetos",
           value: "Projetos",
           active: false,
           submenu: [
             {
-              url: "app/projetos/calculadoradesalariohora",
+              url: "https://benhuur1.github.io/app/projetos/calculadoradesalariohora",
               value: "Cálculadora de salário hora",
               active: false,
             },
