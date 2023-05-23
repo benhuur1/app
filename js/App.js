@@ -1,6 +1,7 @@
 const linkIcon = document.createElement("link");
 linkIcon.rel = "stylesheet";
-linkIcon.href = "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css";
+linkIcon.href =
+  "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css";
 document.head.appendChild(linkIcon);
 
 import "./vuejs.min.js";
@@ -8,10 +9,12 @@ import "./vuejs.min.js";
 import "./HeaderSite.js";
 
 //Component Calculadora
-import "./Calculadora.js"
+import "./Calculadora.js";
+
 
 new Vue({
   el: "#app",
+
   data: {
     mensagem: "Hello, World!",
   },

@@ -2,7 +2,7 @@ const Header = {
   template: `
     <header>
       <div class="container-header">
-        <h1><a :href="'https://' + domain + '/app'">José Ben Hur</a></h1>
+        <h1><a :href="url">José Ben Hur</a></h1>
         <button @click="toggleMenu" class="buttonHamburguer" :class="{menuOpen: isMenuOpen}" :aria-expanded="isMenuOpen" :aria-label="getMenuButtonLabel()">
           <span class="headerHamburguer" :class="{activeMenu: isMenuOpen}"></span>
         </button>
@@ -42,6 +42,7 @@ const Header = {
       domain: "",
       isMenuOpen: false,
       links: [],
+      url: "",
     };
   },
   methods: {
@@ -74,7 +75,9 @@ const Header = {
   },
   mounted() {
     this.domain = window.location.hostname;
-
+    this.url = `https://${this.domain}${
+      this.domain === "benhuur1.github.io" ? "/app" : ""
+    }`;
     this.links = [
       {
         url: `https://${this.domain}${
