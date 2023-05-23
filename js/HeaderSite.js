@@ -106,7 +106,7 @@ const Header = {
         submenu: null,
       },
       {
-        url: `${this.url}sobre`,
+        url: `${this.url}about`,
         value: "Sobre",
         active: false,
         submenu: null,
