@@ -2,7 +2,7 @@ const Header = {
   template: `
     <header>
       <div class="container-header">
-        <h1><a href="/">José Ben Hur</a></h1>
+        <h1><a :href="domain/app">José Ben Hur</a></h1>
         <button @click="toggleMenu" class="buttonHamburguer" :class="{menuOpen: isMenuOpen}" :aria-expanded="isMenuOpen" :aria-label="getMenuButtonLabel()">
           <span class="headerHamburguer" :class="{activeMenu: isMenuOpen}"></span>
         </button>
