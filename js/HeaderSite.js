@@ -45,12 +45,12 @@ const Header = {
         { url: "app/sobre", value: "Sobre", active: false, submenu: null },
         { url: "app/contato", value: "Contato", active: false, submenu: null },
         {
-          url: "app/projetos",
+          url: "app/projects",
           value: "Projetos",
           active: false,
           submenu: [
             {
-              url: "app/projetos/calculadoradesalariohora",
+              url: "app/projects/calculadoradesalariohora",
               value: "Cálculadora de salário hora",
               active: false,
             },
