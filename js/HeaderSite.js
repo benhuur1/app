@@ -106,24 +106,24 @@ const Header = {
         submenu: null,
       },
       {
-        url: `${this.url}/sobre`,
+        url: `${this.url}sobre`,
         value: "Sobre",
         active: false,
         submenu: null,
       },
       {
-        url: `${this.url}/contato`,
+        url: `${this.url}contato`,
         value: "Contato",
         active: false,
         submenu: null,
       },
       {
-        url: `${this.url}/projects`,
+        url: `${this.url}projects`,
         value: "Projetos",
         active: false,
         submenu: [
           {
-            url: `${this.url}/projects/calculadoradesalariohora`,
+            url: `${this.url}projects/calculadoradesalariohora`,
             value: "Cálculadora de salário hora",
             active: false,
           },
