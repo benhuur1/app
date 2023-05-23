@@ -41,16 +41,16 @@ const Header = {
     return {
       isMenuOpen: false,
       links: [
-        { url: "app/", value: "Home", active: false, submenu: null },
-        { url: "app/sobre", value: "Sobre", active: false, submenu: null },
-        { url: "app/contato", value: "Contato", active: false, submenu: null },
+        { url: "/", value: "Home", active: false, submenu: null },
+        { url: "sobre", value: "Sobre", active: false, submenu: null },
+        { url: "contato", value: "Contato", active: false, submenu: null },
         {
-          url: "app/projects",
+          url: "projects",
           value: "Projetos",
           active: false,
           submenu: [
             {
-              url: "app/projects/calculadoradesalariohora",
+              url: "projects/calculadoradesalariohora",
               value: "Cálculadora de salário hora",
               active: false,
             },
@@ -78,14 +78,13 @@ const Header = {
       } else {
         link.submenuTransitionClass = "";
       }
-        // Percorre todos os links para fechar outros submenus abertos
-  this.links.forEach((otherLink) => {
-    if (otherLink !== link) {
-      otherLink.showSubmenu = false;
-    }
-  });
+      // Percorre todos os links para fechar outros submenus abertos
+      this.links.forEach((otherLink) => {
+        if (otherLink !== link) {
+          otherLink.showSubmenu = false;
+        }
+      });
     },
-    
   },
   mounted() {
     const currentPath = window.location.pathname;
