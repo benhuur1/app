@@ -2,7 +2,7 @@ const Header = {
   template: `
     <header>
       <div class="container-header">
-        <h1><a :href="domain/app">José Ben Hur</a></h1>
+        <h1><a :href="https://domain/app">José Ben Hur</a></h1>
         <button @click="toggleMenu" class="buttonHamburguer" :class="{menuOpen: isMenuOpen}" :aria-expanded="isMenuOpen" :aria-label="getMenuButtonLabel()">
           <span class="headerHamburguer" :class="{activeMenu: isMenuOpen}"></span>
         </button>
@@ -43,30 +43,30 @@ const Header = {
       isMenuOpen: false,
       links: [
         {
-          url: `${this.domain}/app`,
+          url: `https://${this.domain}/app`,
           value: "Home",
           active: false,
           submenu: null,
         },
         {
-          url: `${this.domain}/app/sobre`,
+          url: `https://${this.domain}/app/sobre`,
           value: "Sobre",
           active: false,
           submenu: null,
         },
         {
-          url: `${this.domain}/app/contato`,
+          url: `https://${this.domain}/app/contato`,
           value: "Contato",
           active: false,
           submenu: null,
         },
         {
-          url: `${this.domain}/app/projects`,
+          url: `https://${this.domain}/app/projects`,
           value: "Projetos",
           active: false,
           submenu: [
             {
-              url: `${this.domain}/app/projects/calculadoradesalariohora`,
+              url: `https://${this.domain}/app/projects/calculadoradesalariohora`,
               value: "Cálculadora de salário hora",
               active: false,
             },
