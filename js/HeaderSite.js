@@ -42,16 +42,31 @@ const Header = {
       domain: window.location.hostname,
       isMenuOpen: false,
       links: [
-        { url: `${this.domain}`, value: "Home", active: false, submenu: null },
-        { url: `${this.domain}/sobre`, value: "Sobre", active: false, submenu: null },
-        { url: `${this.domain}/contato`, value: "Contato", active: false, submenu: null },
         {
-          url: `${this.domain}/projects`,
+          url: `${this.domain}/app`,
+          value: "Home",
+          active: false,
+          submenu: null,
+        },
+        {
+          url: `${this.domain}/app/sobre`,
+          value: "Sobre",
+          active: false,
+          submenu: null,
+        },
+        {
+          url: `${this.domain}/app/contato`,
+          value: "Contato",
+          active: false,
+          submenu: null,
+        },
+        {
+          url: `${this.domain}/app/projects`,
           value: "Projetos",
           active: false,
           submenu: [
             {
-              url: `${this.domain}/projects/calculadoradesalariohora`,
+              url: `${this.domain}/app/projects/calculadoradesalariohora`,
               value: "Cálculadora de salário hora",
               active: false,
             },
@@ -63,7 +78,7 @@ const Header = {
   methods: {
     toggleMenu() {
       this.isMenuOpen = !this.isMenuOpen;
-      console.log(this.domain)
+      console.log(this.domain);
     },
     getMenuButtonLabel() {
       return this.isMenuOpen ? "Fechar menu" : "Abrir menu";
