@@ -74,33 +74,43 @@ const Header = {
   },
   mounted() {
     this.domain = window.location.hostname;
-    
+
     this.links = [
       {
-        url: `https://${this.domain}/ (${this.domain} === "" app)`,
+        url: `https://${this.domain}${
+          this.domain === "benhuur1.github.io" ? "/app" : ""
+        }`,
         value: "Home",
         active: false,
         submenu: null,
       },
       {
-        url: `https://${this.domain}/app/sobre`,
+        url: `https://${this.domain}${
+          this.domain === "benhuur1.github.io" ? "/app" : ""
+        }/sobre`,
         value: "Sobre",
         active: false,
         submenu: null,
       },
       {
-        url: `https://${this.domain}/app/contato`,
+        url: `https://${this.domain}${
+          this.domain === "benhuur1.github.io" ? "/app" : ""
+        }/contato`,
         value: "Contato",
         active: false,
         submenu: null,
       },
       {
-        url: `https://${this.domain}/app/projects`,
+        url: `https://${this.domain}${
+          this.domain === "benhuur1.github.io" ? "/app" : ""
+        }/projects`,
         value: "Projetos",
         active: false,
         submenu: [
           {
-            url: `https://${this.domain}/app/projects/calculadoradesalariohora`,
+            url: `https://${this.domain}${
+              this.domain === "benhuur1.github.io" ? "/app" : ""
+            }/projects/calculadoradesalariohora`,
             value: "Cálculadora de salário hora",
             active: false,
           },
