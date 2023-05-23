@@ -39,40 +39,9 @@ const Header = {
   `,
   data() {
     return {
-      domain: window.location.hostname,
+      domain: "",
       isMenuOpen: false,
-      links: [
-        {
-          url: `https://${this.domain}/app`,
-          value: "Home",
-          active: false,
-          submenu: null,
-        },
-        {
-          url: `https://${this.domain}/app/sobre`,
-          value: "Sobre",
-          active: false,
-          submenu: null,
-        },
-        {
-          url: `https://${this.domain}/app/contato`,
-          value: "Contato",
-          active: false,
-          submenu: null,
-        },
-        {
-          url: `https://${this.domain}/app/projects`,
-          value: "Projetos",
-          active: false,
-          submenu: [
-            {
-              url: `https://${this.domain}/app/projects/calculadoradesalariohora`,
-              value: "Cálculadora de salário hora",
-              active: false,
-            },
-          ],
-        },
-      ],
+      links: [],
     };
   },
   methods: {
@@ -104,6 +73,39 @@ const Header = {
     },
   },
   mounted() {
+    this.domain = window.location.hostname;
+    this.links = [
+      {
+        url: `https://${this.domain}/app`,
+        value: "Home",
+        active: false,
+        submenu: null,
+      },
+      {
+        url: `https://${this.domain}/app/sobre`,
+        value: "Sobre",
+        active: false,
+        submenu: null,
+      },
+      {
+        url: `https://${this.domain}/app/contato`,
+        value: "Contato",
+        active: false,
+        submenu: null,
+      },
+      {
+        url: `https://${this.domain}/app/projects`,
+        value: "Projetos",
+        active: false,
+        submenu: [
+          {
+            url: `https://${this.domain}/app/projects/calculadoradesalariohora`,
+            value: "Cálculadora de salário hora",
+            active: false,
+          },
+        ],
+      },
+    ];
     const currentPath = window.location.pathname;
     this.links = this.links.map((link) => {
       return {
