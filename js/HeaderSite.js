@@ -75,12 +75,12 @@ const Header = {
   },
   mounted() {
     this.domain = window.location.hostname;
-    this.url = `https://${this.domain}${
+    this.url = `${this.domain}${
       this.domain === "benhuur1.github.io" ? "/app" : ""
     }`;
     this.links = [
       {
-        url: `https://${this.domain}${
+        url: `${this.domain}${
           this.domain === "benhuur1.github.io" ? "/app" : ""
         }`,
         value: "Home",
@@ -88,7 +88,7 @@ const Header = {
         submenu: null,
       },
       {
-        url: `https://${this.domain}${
+        url: `${this.domain}${
           this.domain === "benhuur1.github.io" ? "/app" : ""
         }/sobre`,
         value: "Sobre",
@@ -96,7 +96,7 @@ const Header = {
         submenu: null,
       },
       {
-        url: `https://${this.domain}${
+        url: `${this.domain}${
           this.domain === "benhuur1.github.io" ? "/app" : ""
         }/contato`,
         value: "Contato",
@@ -104,14 +104,14 @@ const Header = {
         submenu: null,
       },
       {
-        url: `https://${this.domain}${
+        url: `${this.domain}${
           this.domain === "benhuur1.github.io" ? "/app" : ""
         }/projects`,
         value: "Projetos",
         active: false,
         submenu: [
           {
-            url: `https://${this.domain}${
+            url: `${this.domain}${
               this.domain === "benhuur1.github.io" ? "/app" : ""
             }/projects/calculadoradesalariohora`,
             value: "Cálculadora de salário hora",
