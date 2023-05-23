@@ -42,13 +42,30 @@ const Header = {
       domain: "",
       isMenuOpen: false,
       links: [],
+      port: "",
+      isGitHub: "",
+      protocol: "",
+      host: "",
+      path: "",
       url: "",
     };
   },
   methods: {
+    buildURL(domain, port, isGitHub) {
+      const protocol = isGitHub ? "https://" : "http://";
+      const hasPort = port && port !== "80" && port !== "443";
+      const path = isGitHub
+        ? domain === "benhuur1.github.io"
+          ? "/app"
+          : ""
+        : "/app/";
+
+      let url = `${protocol}${domain}${hasPort ? `:${port}` : ""}${path}`;
+      return url;
+    },
     toggleMenu() {
       this.isMenuOpen = !this.isMenuOpen;
-      console.log(this.domain);
+      console.log("Porta" + this.port);
     },
     getMenuButtonLabel() {
       return this.isMenuOpen ? "Fechar menu" : "Abrir menu";
@@ -75,45 +92,38 @@ const Header = {
   },
   mounted() {
     this.domain = window.location.hostname;
-    this.url = `${this.domain}${
-      this.domain === "benhuur1.github.io" ? "/app" : ""
-    }`;
+    this.port = window.location.port;
+    this.isGitHub = this.domain === "benhuur1.github.io";
+    this.protocol = this.isGitHub ? "https://" : "http://";
+    this.host = this.isGitHub ? this.domain : `${this.domain}:${this.port}`;
+    this.path = this.isGitHub ? "/app" : "";
+    this.url = `${this.protocol}${this.host}${this.path}/`;
     this.links = [
       {
-        url: `${this.domain}${
-          this.domain === "benhuur1.github.io" ? "/app" : ""
-        }`,
+        url: this.url,
         value: "Home",
         active: false,
         submenu: null,
       },
       {
-        url: `${this.domain}${
-          this.domain === "benhuur1.github.io" ? "/app" : ""
-        }/sobre`,
+        url: `${this.url}/sobre`,
         value: "Sobre",
         active: false,
         submenu: null,
       },
       {
-        url: `${this.domain}${
-          this.domain === "benhuur1.github.io" ? "/app" : ""
-        }/contato`,
+        url: `${this.url}/contato`,
         value: "Contato",
         active: false,
         submenu: null,
       },
       {
-        url: `${this.domain}${
-          this.domain === "benhuur1.github.io" ? "/app" : ""
-        }/projects`,
+        url: `${this.url}/projects`,
         value: "Projetos",
         active: false,
         submenu: [
           {
-            url: `${this.domain}${
-              this.domain === "benhuur1.github.io" ? "/app" : ""
-            }/projects/calculadoradesalariohora`,
+            url: `${this.url}/projects/calculadoradesalariohora`,
             value: "Cálculadora de salário hora",
             active: false,
           },
