@@ -2,7 +2,7 @@ const Header = {
   template: `
     <header>
       <div class="container-header">
-        <h1><a :href="https://domain/app">José Ben Hur</a></h1>
+        <h1><a :href="'https://' + domain + '/app'">José Ben Hur</a></h1>
         <button @click="toggleMenu" class="buttonHamburguer" :class="{menuOpen: isMenuOpen}" :aria-expanded="isMenuOpen" :aria-label="getMenuButtonLabel()">
           <span class="headerHamburguer" :class="{activeMenu: isMenuOpen}"></span>
         </button>
@@ -74,9 +74,10 @@ const Header = {
   },
   mounted() {
     this.domain = window.location.hostname;
+    
     this.links = [
       {
-        url: `https://${this.domain}/app`,
+        url: `https://${this.domain}/ (${this.domain} === "" app)`,
         value: "Home",
         active: false,
         submenu: null,
