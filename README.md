@@ -16,6 +16,16 @@ GitHub Pages serve o repositório direto da branch `master`.
   direto do navegador, com busca, filtro por continente e detalhes de cada
   país. A página tem um painel que mostra a consulta GraphQL executada.
 
+## API GraphQL própria
+
+A pasta `graphql-api/` traz uma API GraphQL que serve a lista de projetos
+consumida por `/projects/`. Ela não roda no GitHub Pages — é publicada
+separadamente como função serverless. As instruções de deploy e o schema
+estão em [`graphql-api/README.md`](graphql-api/README.md).
+
+Enquanto a API não estiver publicada, a página de projetos usa uma lista
+local embutida em `js/ProjetosGraphQL.js` e funciona normalmente.
+
 ### GraphQL sem servidor próprio
 
 O GitHub Pages só entrega arquivos estáticos, então não é possível hospedar
@@ -44,6 +54,7 @@ css/                                      CSS servido (compilado de scss/)
 scss/                                     fontes SCSS
 js/                                       Vue, componentes e páginas
 assets/                                   imagens e ícones
+graphql-api/                              API GraphQL (deploy separado)
 ```
 
 Os arquivos em `css/` são o resultado da compilação de `scss/` e estão

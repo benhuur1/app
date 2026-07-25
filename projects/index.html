@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/x-icon" href="../assets/Josebenhur.svg" />
@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="../css/globals.css" />
     <link rel="stylesheet" href="../css/header.css" />
+    <link rel="stylesheet" href="../css/projetos.css" />
     <title>Projetos | José Ben Hur</title>
     <meta name="description" content="Blog Pessoal José Ben Hur" />
     <!-- Meta tags para compartilhamento em redes sociais facebook  -->
@@ -24,7 +25,7 @@
     <meta name="twitter:description" content="Blog Pessoal José Ben Hur" />
   </head>
   <body>
-    <div id="app">
+    <div id="app-projetos" v-cloak>
       <!-- Header site -->
       <header-site></header-site>
       <div class="container">
@@ -41,21 +42,65 @@
               <span>s</span>
             </h1>
 
-            <h2>1. Calculadora de Horas Extras Para trabalhadores</h2>
-            <p>
-              Efetua um cálculo do valor que você ganha por hora trabalhada e a
-              partir disso gera o valor da <strong>HORA EXTRA</strong>.
-            </p>
-            <a href="calculadoradesalariohora"> Ver Projeto </a>
+            <div class="carregando-projetos" v-if="carregando">
+              <span class="girador" aria-hidden="true"></span>
+              Carregando projetos...
+            </div>
 
-            <h2>2. Explorador de Países com GraphQL</h2>
-            <p>
-              Consulta uma API <strong>GraphQL</strong> pública direto do
-              navegador e lista todos os países do mundo, com busca, filtro por
-              continente e detalhes de cada país (moeda, idiomas, capital e
-              código telefônico). Site estático, sem servidor próprio.
-            </p>
-            <a href="exploradordepaises"> Ver Projeto </a>
+            <div v-else>
+              <div class="filtro-tecnologias">
+                <button
+                  type="button"
+                  class="etiqueta-tecnologia"
+                  :class="{ ativa: tecnologiaSelecionada === '' }"
+                  @click="tecnologiaSelecionada = ''"
+                >
+                  Todas
+                </button>
+                <button
+                  v-for="tecnologia in listaDeTecnologias"
+                  :key="tecnologia"
+                  type="button"
+                  class="etiqueta-tecnologia"
+                  :class="{ ativa: tecnologiaSelecionada === tecnologia }"
+                  @click="tecnologiaSelecionada = tecnologia"
+                >
+                  {{ tecnologia }}
+                </button>
+              </div>
+
+              <ol class="lista-projetos">
+                <li v-for="projeto in projetosFiltrados" :key="projeto.slug">
+                  <h2>{{ projeto.titulo }}</h2>
+                  <p class="ano-projeto">{{ projeto.ano }}</p>
+                  <p>{{ projeto.descricao }}</p>
+                  <p class="tecnologias-projeto">
+                    <span
+                      v-for="tecnologia in projeto.tecnologias"
+                      :key="tecnologia"
+                      class="etiqueta-tecnologia estatica"
+                      >{{ tecnologia }}</span
+                    >
+                  </p>
+                  <a :href="urlDoProjeto(projeto)">Ver Projeto</a>
+                </li>
+              </ol>
+
+              <p class="vazio-projetos" v-if="projetosFiltrados.length === 0">
+                Nenhum projeto usa essa tecnologia ainda.
+              </p>
+
+              <details class="painel-graphql" v-if="viaApi">
+                <summary>Esta lista vem da minha API GraphQL</summary>
+                <p>
+                  Os projetos acima não estão escritos no HTML: são carregados
+                  de uma API GraphQL que eu mesmo escrevi, cujo código está em
+                  <code>graphql-api/</code> neste repositório. A consulta
+                  executada foi:
+                </p>
+                <pre><code>{{ query }}</code></pre>
+              </details>
+            </div>
           </div>
         </div>
       </div>

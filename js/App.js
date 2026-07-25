@@ -14,6 +14,9 @@ import "./Calculadora.js";
 //Component Explorador de Países (GraphQL)
 import "./ExploradorPaises.js";
 
+//Component Lista de projetos (API GraphQL própria)
+import "./ProjetosGraphQL.js";
+
 
 new Vue({
   el: "#app",
