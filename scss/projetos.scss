@@ -1,0 +1,120 @@
+/* Estilos da listagem de projetos */
+[v-cloak] {
+  display: none !important;
+}
+
+.carregando-projetos {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 20px 0;
+}
+
+.girador {
+  width: 18px;
+  height: 18px;
+  border: 3px solid var(--gray-100);
+  border-top-color: #fd2155;
+  border-radius: 50%;
+  animation: girar 0.8s linear infinite;
+}
+@keyframes girar {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.filtro-tecnologias {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 25px;
+}
+
+.etiqueta-tecnologia {
+  font-family: inherit;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border: 1px solid var(--gray-100);
+  border-radius: 20px;
+  background-color: var(--gray-100);
+  color: var(--gray-600);
+  padding: 5px 14px;
+  cursor: pointer;
+  transition: ease-in-out 0.3s;
+  &:hover {
+    border-color: #fd2155;
+  }
+  &.ativa {
+    background-color: var(--gray-900);
+    border-color: var(--gray-900);
+    color: var(--white);
+  }
+  &.estatica {
+    cursor: default;
+    &:hover {
+      border-color: var(--gray-100);
+    }
+  }
+}
+
+.lista-projetos {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  li {
+    border-top: 1px solid var(--gray-100);
+    padding: 25px 0;
+  }
+  h2 {
+    margin: 0;
+  }
+  a {
+    display: inline-block;
+    margin-top: 10px;
+    color: var(--black);
+    text-decoration: underline;
+    &:hover {
+      color: #fd2155;
+    }
+  }
+}
+
+.ano-projeto {
+  color: var(--gray-600);
+  font-size: 14px;
+  margin: 5px 0 10px;
+}
+
+.tecnologias-projeto {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.vazio-projetos {
+  padding: 20px 0;
+  color: var(--gray-600);
+}
+
+.painel-graphql {
+  border: 1px solid var(--gray-100);
+  border-radius: 10px;
+  padding: 15px;
+  margin: 20px 0 40px;
+  summary {
+    cursor: pointer;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  pre {
+    background-color: var(--gray-900);
+    color: var(--gray-100);
+    border-radius: 10px;
+    padding: 15px;
+    overflow-x: auto;
+    font-size: 14px;
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "name": "portfolio-graphql-api",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "API GraphQL que serve os projetos do portfólio de José Ben Hur",
+  "scripts": {
+    "dev": "node servidor-local.mjs"
+  },
+  "dependencies": {
+    "graphql": "^16.9.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
