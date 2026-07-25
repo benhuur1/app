@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/x-icon" href="../../assets/Josebenhur.svg" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="../../css/globals.css" />
+    <link rel="stylesheet" href="../../css/header.css" />
+    <link rel="stylesheet" href="../../css/exploradorpaises.css" />
+    <title>Explorador de Países com GraphQL | José Ben Hur</title>
+    <meta
+      name="description"
+      content="Explorador de países que consome uma API GraphQL pública direto do navegador — busca, filtro por continente e detalhes de cada país. Feito com Vue.js e hospedado no GitHub Pages, sem servidor próprio."
+    />
+    <!-- Meta tags para compartilhamento em redes sociais facebook  -->
+    <meta
+      property="og:title"
+      content="Explorador de Países com GraphQL | José Ben Hur"
+    />
+    <meta
+      property="og:description"
+      content="Explorador de países que consome uma API GraphQL pública direto do navegador — busca, filtro por continente e detalhes de cada país. Feito com Vue.js e hospedado no GitHub Pages, sem servidor próprio."
+    />
+    <meta property="og:image" content="../../assets/code.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:url" content="https://www.josebenhur.com.br/" />
+    <meta property="og:type" content="website" />
+    <!-- Meta tags para compartilhamento em redes sociais twitter  -->
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:creator" content="José Ben Hur" />
+    <meta name="twitter:title" content="Explorador de Países com GraphQL" />
+    <meta
+      name="twitter:description"
+      content="Explorador de países que consome uma API GraphQL pública direto do navegador. Feito com Vue.js e hospedado no GitHub Pages."
+    />
+  </head>
+  <body>
+    <div id="app-paises" v-cloak>
+      <!-- Header site -->
+      <header-site></header-site>
+      <div class="container">
+        <div class="row">
+          <div class="col">
+            <h1>Explorador de Países</h1>
+            <p class="introducao-paises">
+              Este projeto demonstra o uso de <strong>GraphQL</strong> em um
+              site 100% estático hospedado no <strong>GitHub Pages</strong>: o
+              navegador envia consultas GraphQL diretamente para a API pública
+              <a
+                href="https://countries.trevorblades.com/"
+                target="_blank"
+                rel="noopener"
+                >Countries GraphQL API</a
+              >, sem nenhum servidor próprio.
+            </p>
+
+            <!-- Estado de carregamento -->
+            <div class="carregando-paises" v-if="carregando">
+              <span class="girador" aria-hidden="true"></span>
+              Consultando a API GraphQL...
+            </div>
+
+            <!-- Estado de erro -->
+            <div class="erro-paises" v-if="erro">
+              <p>Não foi possível consultar a API GraphQL: {{ erro }}</p>
+              <button class="button" type="button" @click="buscarPaises">
+                Tentar novamente
+              </button>
+            </div>
+
+            <!-- Controles de busca e filtro -->
+            <div v-if="!carregando && !erro">
+              <div class="controles-paises">
+                <input
+                  type="search"
+                  v-model="busca"
+                  placeholder="Buscar por país ou capital..."
+                  aria-label="Buscar por país ou capital"
+                />
+                <select
+                  v-model="continenteSelecionado"
+                  aria-label="Filtrar por continente"
+                >
+                  <option value="">Todos os continentes</option>
+                  <option
+                    v-for="continente in continentes"
+                    :key="continente.code"
+                    :value="continente.code"
+                  >
+                    {{ nomeContinente(continente.code) }}
+                  </option>
+                </select>
+              </div>
+
+              <p class="status-paises">
+                Exibindo {{ paisesFiltrados.length }} de {{ paises.length }}
+                países carregados via GraphQL.
+              </p>
+
+              <p class="vazio-paises" v-if="paisesFiltrados.length === 0">
+                Nenhum país encontrado com esses filtros.
+              </p>
+
+              <!-- Grade de países -->
+              <ul class="grade-paises">
+                <li v-for="pais in paisesFiltrados" :key="pais.code">
+                  <button
+                    type="button"
+                    class="cartao-pais"
+                    @click="verDetalhes(pais)"
+                  >
+                    <span class="bandeira" aria-hidden="true"
+                      >{{ pais.emoji }}</span
+                    >
+                    <strong>{{ pais.nome || pais.name }}</strong>
+                    <small v-if="pais.capital">{{ pais.capital }}</small>
+                    <span class="etiqueta-continente"
+                      >{{ nomeContinente(pais.continent.code) }}</span
+                    >
+                  </button>
+                </li>
+              </ul>
+            </div>
+
+            <!-- Painel didático: a consulta GraphQL usada -->
+            <details class="painel-graphql">
+              <summary>Ver a consulta GraphQL usada</summary>
+              <p>
+                Endpoint: <code>{{ endpoint }}</code> (requisição
+                <code>POST</code> com corpo JSON)
+              </p>
+              <p>Última consulta executada:</p>
+              <pre><code>{{ ultimaConsulta.query }}</code></pre>
+              <p>Variáveis:</p>
+              <pre><code>{{ variaveisFormatadas }}</code></pre>
+            </details>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal de detalhes do país -->
+      <div
+        class="fundo-modal"
+        v-if="paisSelecionado"
+        @click.self="fecharDetalhes"
+        role="dialog"
+        aria-modal="true"
+        :aria-label="'Detalhes de ' + (paisSelecionado.nome || paisSelecionado.name)"
+      >
+        <div class="modal-pais">
+          <button
+            type="button"
+            class="fechar-modal"
+            @click="fecharDetalhes"
+            aria-label="Fechar detalhes"
+          >
+            &times;
+          </button>
+          <h2>
+            <span class="bandeira-grande" aria-hidden="true"
+              >{{ paisSelecionado.emoji }}</span
+            >
+            {{ paisSelecionado.nome || paisSelecionado.name }}
+          </h2>
+
+          <div class="carregando-paises" v-if="carregandoDetalhe">
+            <span class="girador" aria-hidden="true"></span>
+            Consultando detalhes via GraphQL...
+          </div>
+
+          <div class="erro-paises" v-if="erroDetalhe">
+            <p>Não foi possível carregar os detalhes: {{ erroDetalhe }}</p>
+          </div>
+
+          <dl class="detalhes-pais" v-if="paisSelecionado.detalhe">
+            <div>
+              <dt>Nome nativo</dt>
+              <dd>{{ paisSelecionado.detalhe.native || "—" }}</dd>
+            </div>
+            <div>
+              <dt>Capital</dt>
+              <dd>{{ paisSelecionado.detalhe.capital || "—" }}</dd>
+            </div>
+            <div>
+              <dt>Continente</dt>
+              <dd>
+                {{ nomeContinente(paisSelecionado.detalhe.continent.code) }}
+              </dd>
+            </div>
+            <div>
+              <dt>Moeda</dt>
+              <dd>{{ paisSelecionado.detalhe.currency || "—" }}</dd>
+            </div>
+            <div>
+              <dt>Código telefônico</dt>
+              <dd>+{{ paisSelecionado.detalhe.phone }}</dd>
+            </div>
+            <div>
+              <dt>Idiomas</dt>
+              <dd>{{ listaIdiomas(paisSelecionado.detalhe) }}</dd>
+            </div>
+            <div v-if="paisSelecionado.detalhe.states.length">
+              <dt>
+                Estados/Províncias ({{ paisSelecionado.detalhe.states.length }})
+              </dt>
+              <dd class="lista-estados">
+                {{ listaEstados(paisSelecionado.detalhe) }}
+              </dd>
+            </div>
+          </dl>
+        </div>
+      </div>
+    </div>
+
+    <!-- scripts JS  -->
+    <script type="module" src="../../js/App.js"></script>
+  </body>
+</html>
