@@ -11,6 +11,9 @@ import "./HeaderSite.js";
 //Component Calculadora
 import "./Calculadora.js";
 
+//Component Explorador de Países (GraphQL)
+import "./ExploradorPaises.js";
+
 
 new Vue({
   el: "#app",

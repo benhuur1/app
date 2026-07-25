@@ -127,6 +127,11 @@ const Header = {
             value: "Cálculadora de salário hora",
             active: false,
           },
+          {
+            url: `${this.url}projects/exploradordepaises`,
+            value: "Explorador de países (GraphQL)",
+            active: false,
+          },
         ],
       },
     ];
