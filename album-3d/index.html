@@ -1,0 +1,668 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Álbum 3D — preview de personalização</title>
+<style>
+  :root {
+    --bg: #161412;
+    --surface: #1e1b17;
+    --surface-2: #262219;
+    --line: #353027;
+    --text: #ece5d8;
+    --muted: #9a9083;
+    --accent: #c9a45c;
+    --stage: radial-gradient(120% 90% at 50% 30%, #2a251e 0%, #1a1713 70%);
+    --cover: #4f9ab0;
+    --cover-dark: #3a7383;
+    --cover-edge: #2f5e6b;
+    --paper: #f2ecdf;
+    --paper-dark: #ddd3bf;
+    --foil-a: #8a6a2f; --foil-b: #e8cf8e; --foil-c: #b8923f; --foil-d: #f6e7b4; --foil-e: #a07c33;
+    --foil-shadow: rgba(60, 40, 5, 0.45);
+  }
+  @media (prefers-color-scheme: light) {
+    :root {
+      --bg: #f5f1e9;
+      --surface: #fdfbf6;
+      --surface-2: #f1ebdf;
+      --line: #e0d8c8;
+      --text: #2a251d;
+      --muted: #7a7060;
+      --accent: #a07c33;
+      --stage: radial-gradient(120% 90% at 50% 30%, #efe9dc 0%, #e2dac9 70%);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #161412; --surface: #1e1b17; --surface-2: #262219; --line: #353027;
+    --text: #ece5d8; --muted: #9a9083; --accent: #c9a45c;
+    --stage: radial-gradient(120% 90% at 50% 30%, #2a251e 0%, #1a1713 70%);
+  }
+  :root[data-theme="light"] {
+    --bg: #f5f1e9; --surface: #fdfbf6; --surface-2: #f1ebdf; --line: #e0d8c8;
+    --text: #2a251d; --muted: #7a7060; --accent: #a07c33;
+    --stage: radial-gradient(120% 90% at 50% 30%, #efe9dc 0%, #e2dac9 70%);
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 40px 20px 64px; }
+
+  .eyebrow {
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+    font-size: 11px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--accent); margin: 0 0 10px;
+  }
+  h1 {
+    font-size: clamp(26px, 4vw, 38px); font-weight: 600; letter-spacing: -0.01em;
+    margin: 0 0 10px; text-wrap: balance;
+  }
+  .lede { color: var(--muted); max-width: 62ch; margin: 0 0 28px; font-size: 16px; }
+
+  /* ---------- controls ---------- */
+  .controls {
+    display: flex; flex-wrap: wrap; gap: 24px 36px; align-items: flex-end;
+    background: var(--surface); border: 1px solid var(--line); border-radius: 10px;
+    padding: 18px 22px; margin-bottom: 22px;
+  }
+  .ctl-label {
+    display: block;
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+    font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 9px;
+  }
+  .ctl-label b { color: var(--text); font-weight: 600; }
+  .swatches { display: flex; gap: 10px; }
+  .swatch {
+    width: 32px; height: 32px; border-radius: 50%; cursor: pointer;
+    border: 2px solid transparent; outline-offset: 3px; padding: 0;
+    box-shadow: inset 0 0 0 2px rgba(255,255,255,0.12), 0 1px 3px rgba(0,0,0,0.3);
+    transition: transform 0.12s ease;
+  }
+  .swatch:hover { transform: scale(1.1); }
+  .swatch[aria-pressed="true"] { border-color: var(--accent); transform: scale(1.08); }
+  .swatch:focus-visible { outline: 2px solid var(--accent); }
+
+  .name-field input {
+    font-family: inherit; font-style: italic; font-size: 17px;
+    background: var(--surface-2); color: var(--text);
+    border: 1px solid var(--line); border-radius: 8px;
+    padding: 8px 12px; width: 210px;
+  }
+  .name-field input:focus-visible { outline: 2px solid var(--accent); border-color: transparent; }
+  .name-field input::placeholder { color: var(--muted); }
+
+  .foil-toggle { display: flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+  .foil-toggle button {
+    font-family: ui-sans-serif, system-ui, sans-serif; font-size: 13px; font-weight: 600;
+    background: var(--surface-2); color: var(--muted); border: 0; cursor: pointer;
+    padding: 9px 16px; display: flex; align-items: center; gap: 7px;
+  }
+  .foil-toggle button + button { border-left: 1px solid var(--line); }
+  .foil-toggle button[aria-pressed="true"] { background: var(--surface); color: var(--text); }
+  .foil-dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
+  .foil-dot.gold { background: linear-gradient(135deg, #f6e7b4, #b8923f); }
+  .foil-dot.silver { background: linear-gradient(135deg, #f4f7fa, #9aa1a8); }
+  .foil-toggle button:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+
+  /* ---------- panels ---------- */
+  .panels { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  @media (max-width: 760px) { .panels { grid-template-columns: 1fr; } }
+  .panel { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+  .panel-head {
+    display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    padding: 12px 16px; border-bottom: 1px solid var(--line);
+  }
+  .tech {
+    font-family: ui-sans-serif, system-ui, sans-serif; font-size: 13px; font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+  .tech small { display: block; font-weight: 500; font-size: 11px; color: var(--muted); letter-spacing: 0.04em; }
+  .kb {
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 11px;
+    color: var(--muted); background: var(--surface-2); border: 1px solid var(--line);
+    padding: 4px 8px; border-radius: 999px; white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+  }
+  .stage {
+    position: relative; aspect-ratio: 10 / 9; background: var(--stage);
+    cursor: grab; touch-action: none; user-select: none; -webkit-user-select: none;
+  }
+  .stage.dragging { cursor: grabbing; }
+  .stage canvas { display: block; width: 100%; height: 100%; }
+  .hint {
+    position: absolute; left: 0; right: 0; bottom: 10px; text-align: center; pointer-events: none;
+    font-family: ui-sans-serif, system-ui, sans-serif; font-size: 11px; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--muted); opacity: 0.8;
+  }
+
+  /* ---------- CSS 3D album ---------- */
+  .css-scene {
+    position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+    perspective: 1500px;
+  }
+  #css-stage { --aw: 280px; --ad: 34px; }
+  @media (max-width: 480px) { #css-stage { --aw: 200px; --ad: 26px; } }
+  .album {
+    position: relative; width: var(--aw); height: var(--aw);
+    transform-style: preserve-3d;
+    transform: rotateX(var(--rx, 6deg)) rotateY(var(--ry, -22deg));
+  }
+  .album .face { position: absolute; backface-visibility: hidden; }
+  .f-front, .f-back { inset: 0; border-radius: 3px 10px 10px 3px; }
+  .f-front {
+    transform: translateZ(calc(var(--ad) / 2));
+    background:
+      linear-gradient(115deg, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0.03) 38%, rgba(0,0,0,0.10) 72%, rgba(0,0,0,0.22) 100%),
+      var(--cover);
+    box-shadow: inset 0 0 40px rgba(0,0,0,0.12);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .f-front::before {
+    content: ""; position: absolute; inset: 16px; border-radius: 2px 6px 6px 2px;
+    border: 1px solid rgba(0,0,0,0.18);
+    box-shadow: 0 1px 0 rgba(255,255,255,0.10);
+    pointer-events: none;
+  }
+  .f-back {
+    transform: rotateY(180deg) translateZ(calc(var(--ad) / 2));
+    background:
+      linear-gradient(245deg, rgba(255,255,255,0.10), rgba(0,0,0,0.25) 85%),
+      var(--cover-dark);
+  }
+  .f-spine {
+    width: var(--ad); top: 0; bottom: 0; left: 50%; margin-left: calc(var(--ad) / -2);
+    transform: rotateY(-90deg) translateZ(calc(var(--aw) / 2));
+    background: linear-gradient(180deg, rgba(255,255,255,0.10), rgba(0,0,0,0.22)), var(--cover-edge);
+    border-radius: 3px;
+  }
+  .f-edge {
+    width: var(--ad); top: 0; bottom: 0; left: 50%; margin-left: calc(var(--ad) / -2);
+    transform: rotateY(90deg) translateZ(calc(var(--aw) / 2));
+    background:
+      linear-gradient(180deg, rgba(0,0,0,0.06), rgba(0,0,0,0.16)),
+      linear-gradient(90deg, var(--cover-edge) 0 3px, transparent 3px calc(100% - 3px), var(--cover-edge) calc(100% - 3px)),
+      repeating-linear-gradient(90deg, var(--paper) 0 2px, var(--paper-dark) 2px 3px);
+  }
+  .f-top, .f-bottom { height: var(--ad); left: 0; right: 0; top: 50%; margin-top: calc(var(--ad) / -2); }
+  .f-top {
+    transform: rotateX(90deg) translateZ(calc(var(--aw) / 2));
+    background:
+      linear-gradient(180deg, var(--cover-edge) 0 3px, transparent 3px calc(100% - 3px), var(--cover-edge) calc(100% - 3px)),
+      repeating-linear-gradient(0deg, var(--paper) 0 2px, var(--paper-dark) 2px 3px);
+  }
+  .f-bottom {
+    transform: rotateX(-90deg) translateZ(calc(var(--aw) / 2));
+    background:
+      linear-gradient(180deg, var(--cover-edge) 0 3px, transparent 3px calc(100% - 3px), var(--cover-edge) calc(100% - 3px)),
+      repeating-linear-gradient(0deg, var(--paper-dark) 0 2px, var(--paper) 2px 3px);
+    filter: brightness(0.75);
+  }
+  .foil-name {
+    font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+    font-style: italic; font-weight: 600; font-size: calc(var(--aw) * 0.12); letter-spacing: 0.02em;
+    max-width: 86%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    background: linear-gradient(178deg, var(--foil-a) 0%, var(--foil-b) 30%, var(--foil-c) 52%, var(--foil-d) 74%, var(--foil-e) 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    filter: drop-shadow(0 1px 0 var(--foil-shadow));
+  }
+  .album-shadow {
+    position: absolute; left: 50%; bottom: 8%; width: var(--aw); height: 28px;
+    transform: translateX(-50%);
+    background: radial-gradient(ellipse at center, rgba(0,0,0,0.38), transparent 68%);
+    filter: blur(7px); pointer-events: none;
+  }
+
+  /* ---------- comparison ---------- */
+  .tdd { margin-top: 40px; }
+  .tdd h2 { font-size: 21px; font-weight: 600; margin: 0 0 6px; }
+  .tdd p { color: var(--muted); margin: 0 0 16px; max-width: 68ch; }
+  .table-scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; }
+  table { border-collapse: collapse; width: 100%; min-width: 640px; background: var(--surface); }
+  th, td { text-align: left; padding: 12px 16px; border-bottom: 1px solid var(--line); font-size: 14.5px; vertical-align: top; }
+  tr:last-child td { border-bottom: 0; }
+  thead th {
+    font-family: ui-sans-serif, system-ui, sans-serif; font-size: 11px; font-weight: 700;
+    letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted);
+    background: var(--surface-2);
+  }
+  td.crit { color: var(--muted); font-family: ui-sans-serif, system-ui, sans-serif; font-size: 13px; font-weight: 600; min-width: 130px; }
+  td .num { font-variant-numeric: tabular-nums; }
+
+  footer.note {
+    margin-top: 28px; color: var(--muted); font-size: 13px;
+    font-family: ui-sans-serif, system-ui, sans-serif;
+  }
+  footer.note code { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 12px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .swatch, .swatch:hover { transition: none; transform: none; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <p class="eyebrow">FN-788 · Cycle 13 · Prova de conceito</p>
+    <h1>Álbum 3D com preview de personalização</h1>
+    <p class="lede">Duas implementações do mesmo álbum, lado a lado, para a decisão técnica do TDD:
+    WebGL com Three.js contra CSS 3D puro. A personalização — cor da capa e nome em hot-stamping —
+    atualiza os dois previews em tempo real.</p>
+  </header>
+
+  <section class="controls" aria-label="Personalização">
+    <div>
+      <span class="ctl-label" id="color-label">Cor da capa — <b id="color-name">Piscina</b></span>
+      <div class="swatches" role="group" aria-labelledby="color-label" id="swatches"></div>
+    </div>
+    <div class="name-field">
+      <label class="ctl-label" for="name-input">Nome na capa</label>
+      <input id="name-input" type="text" maxlength="20" value="Helena" placeholder="Seu nome" autocomplete="off" spellcheck="false">
+    </div>
+    <div>
+      <span class="ctl-label" id="foil-label">Foil</span>
+      <div class="foil-toggle" role="group" aria-labelledby="foil-label">
+        <button type="button" id="foil-gold" aria-pressed="true"><span class="foil-dot gold"></span>Dourado</button>
+        <button type="button" id="foil-silver" aria-pressed="false"><span class="foil-dot silver"></span>Prateado</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="panels">
+    <div class="panel">
+      <div class="panel-head">
+        <div class="tech">WebGL · Three.js<small>iluminação e sombras reais, foil texturizado</small></div>
+        <span class="kb">633 KB min · 154 KB gzip</span>
+      </div>
+      <div class="stage" id="gl-stage">
+        <div class="hint">Arraste para girar</div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-head">
+        <div class="tech">CSS 3D · zero dependências<small>transforms + gradientes, sem WebGL</small></div>
+        <span class="kb" id="css-kb">≈ 6 KB</span>
+      </div>
+      <div class="stage" id="css-stage">
+        <div class="css-scene">
+          <div class="album" id="css-album">
+            <div class="face f-back"></div>
+            <div class="face f-spine"></div>
+            <div class="face f-edge"></div>
+            <div class="face f-top"></div>
+            <div class="face f-bottom"></div>
+            <div class="face f-front"><span class="foil-name" id="css-name">Helena</span></div>
+          </div>
+        </div>
+        <div class="album-shadow"></div>
+        <div class="hint">Arraste para girar</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="tdd">
+    <h2>Comparativo para o TDD</h2>
+    <p>Números medidos neste demo. O critério decisivo tende a ser peso × realismo:
+    o Three.js só se paga se o bundle for carregado de forma adiada, fora do caminho crítico da PDP.</p>
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr><th>Critério</th><th>WebGL · Three.js</th><th>CSS 3D puro</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="crit">Peso adicionado</td>
+            <td><span class="num">633 KB</span> min / <span class="num">154 KB</span> gzip (three.min.js r152) + ~7 KB de cena</td>
+            <td><span class="num">≈ 6 KB</span> de HTML + CSS + JS, sem bibliotecas</td>
+          </tr>
+          <tr>
+            <td class="crit">Realismo</td>
+            <td>Luz direcional com sombra, material com rugosidade, textura de tecido e foil com relevo via canvas</td>
+            <td>Iluminação simulada com gradientes estáticos por face; sem sombra dinâmica nem material</td>
+          </tr>
+          <tr>
+            <td class="crit">Personalização</td>
+            <td>Textura da capa redesenhada em canvas a cada mudança (cor, nome, foil) — extensível a fotos do cliente nas páginas</td>
+            <td>Custom properties CSS + <code>background-clip: text</code>; simples, mas limitado a efeitos 2D na capa</td>
+          </tr>
+          <tr>
+            <td class="crit">Mobile</td>
+            <td>WebGL é universal, mas exige teto de DPR e atenção a memória no Safari iOS</td>
+            <td>Transforms com aceleração nativa; excelente em aparelhos de entrada</td>
+          </tr>
+          <tr>
+            <td class="crit">Caminho no tema Shopify</td>
+            <td>Import dinâmico só na PDP variante B, disparado na primeira interação (fora do LCP)</td>
+            <td>Inline na própria section Liquid; custo praticamente zero no carregamento</td>
+          </tr>
+          <tr>
+            <td class="crit">Evolução (folhear páginas, fotos reais)</td>
+            <td>Natural: geometria de página com curvatura, texturas por foto</td>
+            <td>Possível, mas o custo de fidelidade cresce rápido além da capa</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <footer class="note">
+    Demo autocontido — nenhum recurso externo além do <code>three.min.js</code> vendorizado.
+    Cores do catálogo: Piscina, Terracota, Verde Oliva, Areia e Grafite.
+  </footer>
+</div>
+
+<script src="./three.min.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  /* ---------------- state ---------------- */
+  var COLORS = [
+    { name: 'Piscina',     hex: '#4f9ab0' },
+    { name: 'Terracota',   hex: '#b45f45' },
+    { name: 'Verde Oliva', hex: '#6b7350' },
+    { name: 'Areia',       hex: '#d6c3a3' },
+    { name: 'Grafite',     hex: '#3e4247' }
+  ];
+  var FOILS = {
+    gold:   { stops: ['#8a6a2f', '#e8cf8e', '#b8923f', '#f6e7b4', '#a07c33'], shadow: 'rgba(60,40,5,0.45)' },
+    silver: { stops: ['#8f959c', '#e8ecf0', '#aab1b8', '#f4f7fa', '#9aa1a8'], shadow: 'rgba(20,25,32,0.45)' }
+  };
+  var state = { color: COLORS[0], name: 'Helena', foil: 'gold' };
+  var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function shade(hex, f) {
+    var n = parseInt(hex.slice(1), 16);
+    var r = Math.round(((n >> 16) & 255) * f), g = Math.round(((n >> 8) & 255) * f), b = Math.round((n & 255) * f);
+    return 'rgb(' + Math.min(r, 255) + ',' + Math.min(g, 255) + ',' + Math.min(b, 255) + ')';
+  }
+
+  /* ---------------- shared drag ---------------- */
+  function makeSpin(rx0, ry0) {
+    return { rx: rx0, ry: ry0, trx: rx0, try_: ry0, vy: 0 };
+  }
+  function attachDrag(el, spin) {
+    var px = 0, py = 0, dragging = false, lastDx = 0;
+    el.addEventListener('pointerdown', function (e) {
+      dragging = true; px = e.clientX; py = e.clientY; lastDx = 0;
+      el.classList.add('dragging');
+      el.setPointerCapture(e.pointerId);
+    });
+    el.addEventListener('pointermove', function (e) {
+      if (!dragging) return;
+      var dx = e.clientX - px, dy = e.clientY - py;
+      px = e.clientX; py = e.clientY; lastDx = dx;
+      spin.try_ += dx * 0.007;
+      spin.trx = Math.max(-0.55, Math.min(0.55, spin.trx - dy * 0.005));
+    });
+    function up() {
+      if (!dragging) return;
+      dragging = false; el.classList.remove('dragging');
+      if (!reducedMotion) spin.vy = lastDx * 0.004;
+    }
+    el.addEventListener('pointerup', up);
+    el.addEventListener('pointercancel', up);
+  }
+  function stepSpin(spin) {
+    spin.try_ += spin.vy; spin.vy *= 0.94;
+    var k = reducedMotion ? 1 : 0.14;
+    spin.rx += (spin.trx - spin.rx) * k;
+    spin.ry += (spin.try_ - spin.ry) * k;
+  }
+
+  /* ---------------- cover texture (canvas, shared look) ---------------- */
+  var TEX = 1024;
+  var texCanvas = document.createElement('canvas');
+  texCanvas.width = TEX; texCanvas.height = TEX;
+  var noise = null;
+  function makeNoise() {
+    var c = document.createElement('canvas'); c.width = TEX; c.height = TEX;
+    var x = c.getContext('2d');
+    for (var i = 0; i < 26000; i++) {
+      x.fillStyle = (i % 2) ? 'rgba(255,255,255,0.030)' : 'rgba(0,0,0,0.035)';
+      x.fillRect(Math.random() * TEX, Math.random() * TEX, 1.4, 1.4);
+    }
+    return c;
+  }
+  function drawCover(ctx) {
+    var foil = FOILS[state.foil];
+    ctx.clearRect(0, 0, TEX, TEX);
+    ctx.fillStyle = state.color.hex;
+    ctx.fillRect(0, 0, TEX, TEX);
+    if (!noise) noise = makeNoise();
+    ctx.drawImage(noise, 0, 0);
+
+    var vg = ctx.createRadialGradient(TEX / 2, TEX * 0.42, TEX * 0.2, TEX / 2, TEX / 2, TEX * 0.75);
+    vg.addColorStop(0, 'rgba(255,255,255,0.05)');
+    vg.addColorStop(1, 'rgba(0,0,0,0.16)');
+    ctx.fillStyle = vg;
+    ctx.fillRect(0, 0, TEX, TEX);
+
+    // moldura em baixo-relevo
+    ctx.lineWidth = 3;
+    ctx.strokeStyle = 'rgba(0,0,0,0.22)';
+    ctx.strokeRect(64, 64, TEX - 128, TEX - 128);
+    ctx.strokeStyle = 'rgba(255,255,255,0.10)';
+    ctx.strokeRect(67, 67, TEX - 128, TEX - 128);
+
+    var name = state.name.trim();
+    if (name) {
+      var px = 130;
+      ctx.font = 'italic 600 ' + px + 'px "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif';
+      while (px > 40 && ctx.measureText(name).width > TEX - 260) {
+        px -= 6;
+        ctx.font = 'italic 600 ' + px + 'px "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif';
+      }
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      var cy = TEX / 2;
+      // relevo: sombra escura abaixo, brilho acima
+      ctx.fillStyle = 'rgba(0,0,0,0.38)';
+      ctx.fillText(name, TEX / 2, cy + 4);
+      ctx.fillStyle = 'rgba(255,255,255,0.14)';
+      ctx.fillText(name, TEX / 2, cy - 3);
+      var fg = ctx.createLinearGradient(0, cy - px * 0.6, 0, cy + px * 0.6);
+      var stops = foil.stops;
+      for (var i = 0; i < stops.length; i++) fg.addColorStop(i / (stops.length - 1), stops[i]);
+      ctx.fillStyle = fg;
+      ctx.fillText(name, TEX / 2, cy);
+    }
+  }
+
+  /* ---------------- Three.js panel ---------------- */
+  var glStage = document.getElementById('gl-stage');
+  var glSpin = makeSpin(0.10, -0.38);
+  var renderer, scene, camera, albumGroup, coverTexture, coverMats = [];
+
+  function initGL() {
+    renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    if ('outputColorSpace' in renderer) renderer.outputColorSpace = THREE.SRGBColorSpace;
+    glStage.insertBefore(renderer.domElement, glStage.firstChild);
+
+    scene = new THREE.Scene();
+    camera = new THREE.PerspectiveCamera(32, 1, 0.1, 50);
+    camera.position.set(0.3, 1.35, 6.6);
+    camera.lookAt(0, -0.1, 0);
+
+    scene.add(new THREE.HemisphereLight(0xfff4e2, 0x40372a, 0.75));
+    var key = new THREE.DirectionalLight(0xffffff, 0.85);
+    key.position.set(2.6, 4.2, 3.2);
+    key.castShadow = true;
+    key.shadow.mapSize.set(1024, 1024);
+    key.shadow.camera.left = -4; key.shadow.camera.right = 4;
+    key.shadow.camera.top = 4; key.shadow.camera.bottom = -4;
+    key.shadow.radius = 6;
+    scene.add(key);
+    var fill = new THREE.DirectionalLight(0xdfe8ff, 0.22);
+    fill.position.set(-3, 1.5, -2.5);
+    scene.add(fill);
+
+    coverTexture = new THREE.CanvasTexture(texCanvas);
+    if ('colorSpace' in coverTexture) coverTexture.colorSpace = THREE.SRGBColorSpace;
+    coverTexture.anisotropy = renderer.capabilities.getMaxAnisotropy();
+
+    albumGroup = new THREE.Group();
+    var W = 3, H = 3, CT = 0.10, PT = 0.42;
+
+    function coverMat(colorRole) {
+      var m = new THREE.MeshStandardMaterial({ roughness: 0.72, metalness: 0.04 });
+      m.userData.role = colorRole;
+      coverMats.push(m);
+      return m;
+    }
+    var texturedMat = new THREE.MeshStandardMaterial({ map: coverTexture, roughness: 0.72, metalness: 0.04 });
+
+    // capa frontal: face +z recebe a textura personalizada
+    var plain = coverMat('base');
+    var front = new THREE.Mesh(
+      new THREE.BoxGeometry(W, H, CT),
+      [plain, plain, plain, plain, texturedMat, coverMat('dark')]
+    );
+    front.position.z = PT / 2 + CT / 2;
+    var back = new THREE.Mesh(new THREE.BoxGeometry(W, H, CT), coverMat('dark'));
+    back.position.z = -(PT / 2 + CT / 2);
+    var spine = new THREE.Mesh(new THREE.BoxGeometry(CT, H, PT + CT * 2), coverMat('edge'));
+    spine.position.x = -(W / 2 + CT / 2);
+
+    var pagesMat = new THREE.MeshStandardMaterial({ color: 0xf2ecdf, roughness: 0.92, metalness: 0 });
+    var pages = new THREE.Mesh(new THREE.BoxGeometry(W - 0.06, H - 0.08, PT), pagesMat);
+    pages.position.x = -0.02;
+
+    [front, back, spine, pages].forEach(function (m) {
+      m.castShadow = true;
+      m.receiveShadow = true;
+      albumGroup.add(m);
+    });
+    scene.add(albumGroup);
+
+    var ground = new THREE.Mesh(
+      new THREE.PlaneGeometry(20, 20),
+      new THREE.ShadowMaterial({ opacity: 0.22 })
+    );
+    ground.rotation.x = -Math.PI / 2;
+    ground.position.y = -(H / 2) - 0.35;
+    ground.receiveShadow = true;
+    scene.add(ground);
+
+    function resize() {
+      var w = glStage.clientWidth, h = glStage.clientHeight;
+      if (!w || !h) return;
+      renderer.setSize(w, h, false);
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+    }
+    new ResizeObserver(resize).observe(glStage);
+    resize();
+    attachDrag(glStage, glSpin);
+  }
+
+  function applyGL() {
+    drawCover(texCanvas.getContext('2d'));
+    coverTexture.needsUpdate = true;
+    var base = state.color.hex;
+    coverMats.forEach(function (m) {
+      var f = m.userData.role === 'dark' ? 0.72 : m.userData.role === 'edge' ? 0.6 : 1;
+      m.color.set(new THREE.Color(base).multiplyScalar(f));
+    });
+  }
+
+  /* ---------------- CSS 3D panel ---------------- */
+  var cssStage = document.getElementById('css-stage');
+  var cssAlbum = document.getElementById('css-album');
+  var cssName = document.getElementById('css-name');
+  var cssSpin = makeSpin(0.10, -0.38);
+  attachDrag(cssStage, cssSpin);
+
+  function applyCSS() {
+    var root = document.documentElement.style;
+    root.setProperty('--cover', state.color.hex);
+    root.setProperty('--cover-dark', shade(state.color.hex, 0.72));
+    root.setProperty('--cover-edge', shade(state.color.hex, 0.58));
+    var foil = FOILS[state.foil];
+    ['a', 'b', 'c', 'd', 'e'].forEach(function (k, i) {
+      root.setProperty('--foil-' + k, foil.stops[i]);
+    });
+    root.setProperty('--foil-shadow', foil.shadow);
+    cssName.textContent = state.name.trim();
+  }
+
+  /* ---------------- controls ---------------- */
+  var swatchWrap = document.getElementById('swatches');
+  var colorName = document.getElementById('color-name');
+  COLORS.forEach(function (c, i) {
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'swatch';
+    b.style.background = 'linear-gradient(135deg, ' + shade(c.hex, 1.15) + ', ' + c.hex + ' 55%, ' + shade(c.hex, 0.8) + ')';
+    b.setAttribute('aria-label', c.name);
+    b.setAttribute('aria-pressed', i === 0 ? 'true' : 'false');
+    b.title = c.name;
+    b.addEventListener('click', function () {
+      state.color = c;
+      colorName.textContent = c.name;
+      swatchWrap.querySelectorAll('.swatch').forEach(function (s) { s.setAttribute('aria-pressed', 'false'); });
+      b.setAttribute('aria-pressed', 'true');
+      applyAll();
+    });
+    swatchWrap.appendChild(b);
+  });
+
+  document.getElementById('name-input').addEventListener('input', function (e) {
+    state.name = e.target.value;
+    applyAll();
+  });
+
+  var goldBtn = document.getElementById('foil-gold');
+  var silverBtn = document.getElementById('foil-silver');
+  function setFoil(f) {
+    state.foil = f;
+    goldBtn.setAttribute('aria-pressed', f === 'gold' ? 'true' : 'false');
+    silverBtn.setAttribute('aria-pressed', f === 'silver' ? 'true' : 'false');
+    applyAll();
+  }
+  goldBtn.addEventListener('click', function () { setFoil('gold'); });
+  silverBtn.addEventListener('click', function () { setFoil('silver'); });
+
+  function applyAll() {
+    applyCSS();
+    if (renderer) applyGL();
+  }
+
+  /* ---------------- boot + loop ---------------- */
+  var hasGL = typeof THREE !== 'undefined';
+  if (hasGL) {
+    try { initGL(); } catch (err) {
+      hasGL = false;
+      glStage.querySelector('.hint').textContent = 'WebGL indisponível neste dispositivo';
+    }
+  }
+  applyAll();
+
+  function loop() {
+    stepSpin(glSpin);
+    stepSpin(cssSpin);
+    cssAlbum.style.setProperty('--rx', (cssSpin.rx * -57.3) + 'deg');
+    cssAlbum.style.setProperty('--ry', (cssSpin.ry * 57.3) + 'deg');
+    if (hasGL && renderer) {
+      albumGroup.rotation.x = glSpin.rx;
+      albumGroup.rotation.y = glSpin.ry;
+      renderer.render(scene, camera);
+    }
+    requestAnimationFrame(loop);
+  }
+  loop();
+})();
+</script>
+</body>
+</html>
