@@ -878,7 +878,7 @@
     const TEXW = 1024;
     const W = 2.1, H = 3.15, CT = 0.09, PT = 0.44; // Classic Pocket 10x15cm (2:3)
     const COVH = Math.round(TEXW * (H / W)); // altura do canvas da capa
-    let renderer, scene, camera, group, coverTex, spineTex, coverMats, host, ro, raf;
+    let renderer, scene, camera, group, coverTex, spineTex, coverMats, coverMaps, spineMaps, host, ro, raf;
     const spin = { rx: 0.08, ry: -0.5, trx: 0.08, try_: -0.5, vy: 0 };
     let lastState = null;
     const iconImgs = {}; // data-URI → Image (mesma origem; sem taint no canvas)
@@ -967,7 +967,48 @@
       return t;
     }
 
-    function engraveLine(ctx, text, iconName, cx, cy, px, foilId) {
+    // Máscaras dinâmicas por face gravada: metalnessMap (texto = metal),
+    // roughnessMap (texto liso sobre linho fosco) e bumpMap (trama + texto
+    // prensado). O engraveLog registra cada gravação (com transform e
+    // letter-spacing) para replay 1:1 nas três máscaras.
+    let engraveLog = null;
+    function makeEngravedMaps(cw, ch) {
+      const mk = () => { const c = document.createElement('canvas'); c.width = cw; c.height = ch; return c; };
+      const maps = { metalC: mk(), roughC: mk(), bumpC: mk() };
+      maps.metal = new THREE.CanvasTexture(maps.metalC);
+      maps.rough = new THREE.CanvasTexture(maps.roughC);
+      maps.bump = new THREE.CanvasTexture(maps.bumpC);
+      return maps;
+    }
+    function paintMaps(maps, log) {
+      const paint = (canvas, bg, ink, weave) => {
+        const x = canvas.getContext('2d');
+        x.setTransform(1, 0, 0, 1, 0, 0);
+        x.fillStyle = bg;
+        x.fillRect(0, 0, canvas.width, canvas.height);
+        if (weave) {
+          const pat = x.createPattern(weaveTile(), 'repeat');
+          if (pat.setTransform) pat.setTransform(new DOMMatrix([WEAVE_SCALE, 0, 0, WEAVE_SCALE, 0, 0]));
+          x.fillStyle = pat;
+          x.fillRect(0, 0, canvas.width, canvas.height);
+        }
+        (log || []).forEach((e) => {
+          x.setTransform(e.m);
+          try { x.letterSpacing = e.ls; } catch (err) { /* sem suporte */ }
+          engraveLine(x, e.text, e.iconName, e.cx, e.cy, e.px, e.foilId, ink);
+        });
+        x.setTransform(1, 0, 0, 1, 0, 0);
+      };
+      paint(maps.metalC, '#000000', '#ffffff', false);
+      paint(maps.roughC, '#d9d9d9', '#707070', false);
+      paint(maps.bumpC, '#808080', '#4f4f4f', true);
+      maps.metal.needsUpdate = true;
+      maps.rough.needsUpdate = true;
+      maps.bump.needsUpdate = true;
+    }
+
+    function engraveLine(ctx, text, iconName, cx, cy, px, foilId, flat) {
+      if (engraveLog && !flat) engraveLog.push({ m: ctx.getTransform(), ls: ctx.letterSpacing || '0px', text, iconName, cx, cy, px, foilId });
       const stops = foilStops(foilId);
       const label = (text || '').toUpperCase();
       ctx.font = `500 ${px}px 'Times New Roman', Times, serif`; // mesma família do preview 2D
@@ -979,6 +1020,15 @@
       const startX = cx - total / 2;
       ctx.textAlign = 'left';
       ctx.textBaseline = 'middle';
+      if (flat) {
+        ctx.fillStyle = flat;
+        ctx.fillText(label, startX, cy);
+        if (icon) {
+          const solid = tintedIcon(iconName, iconPx, flat);
+          if (solid) ctx.drawImage(solid, startX + w + gap, cy - iconPx / 2, iconPx, iconPx);
+        }
+        return total;
+      }
       // baixo-relevo: sombra clara abaixo + escura acima (gravação prensada)
       ctx.fillStyle = 'rgba(255,255,255,0.28)';
       ctx.fillText(label, startX, cy + Math.max(2, px * 0.035));
@@ -1009,6 +1059,7 @@
     }
 
     function drawCover(st) {
+      engraveLog = [];
       const ctx = coverTex.image.getContext('2d');
       const cw = TEXW, ch = COVH;
       ctx.clearRect(0, 0, cw, ch);
@@ -1034,10 +1085,14 @@
         const cy0 = ch * 0.33 - ((lines.length - 1) * lineH) / 2; // engraving no terço superior, como nas fotos
         lines.forEach((l, i) => engraveLine(ctx, l.text, l.icon, cw / 2, cy0 + i * lineH, px, st.foilId));
       }
+      const covLog = engraveLog;
+      engraveLog = null;
+      paintMaps(coverMaps, covLog);
       coverTex.needsUpdate = true;
     }
 
     function drawSpine(st) {
+      engraveLog = [];
       const ctx = spineTex.image.getContext('2d');
       const cw = 256, ch = COVH;
       ctx.clearRect(0, 0, cw, ch);
@@ -1053,6 +1108,9 @@
         engraveLine(ctx, side, st.sideIcon, 0, 0, 74, st.foilId);
         ctx.restore();
       }
+      const spLog = engraveLog;
+      engraveLog = null;
+      paintMaps(spineMaps, spLog);
       spineTex.needsUpdate = true;
     }
 
@@ -1081,6 +1139,8 @@
       renderer.shadowMap.enabled = true;
       renderer.shadowMap.type = THREE.PCFSoftShadowMap;
       if ('outputColorSpace' in renderer) renderer.outputColorSpace = THREE.SRGBColorSpace;
+      renderer.toneMapping = THREE.ACESFilmicToneMapping;
+      renderer.toneMappingExposure = 1.15;
       host.appendChild(renderer.domElement);
 
       scene = new THREE.Scene();
@@ -1088,13 +1148,39 @@
       camera.position.set(0.35, 1.15, 7.4);
       camera.lookAt(0, -0.1, 0);
 
-      scene.add(new THREE.HemisphereLight(0xffffff, 0x8a8a86, 0.85));
-      const key = new THREE.DirectionalLight(0xffffff, 0.75);
+      // "Estúdio" procedural: softboxes emissivos capturados via PMREM viram o
+      // environment da cena — reflexos suaves no linho e, principalmente, o
+      // brilho vivo do foil metálico ao girar.
+      const studio = new THREE.Scene();
+      studio.add(new THREE.Mesh(
+        new THREE.SphereGeometry(20, 16, 16),
+        new THREE.MeshBasicMaterial({ color: 0x5c5c5c, side: THREE.BackSide })
+      ));
+      const softbox = (w, h, x, y, z, level) => {
+        const m = new THREE.Mesh(
+          new THREE.PlaneGeometry(w, h),
+          new THREE.MeshBasicMaterial({ color: new THREE.Color().setScalar(level) })
+        );
+        m.position.set(x, y, z);
+        m.lookAt(0, 0, 0);
+        studio.add(m);
+      };
+      softbox(8, 6, -6, 6, 6, 5.0);   // key ampla, alto-esquerda
+      softbox(6, 8, 7, 3, 4, 2.2);    // fill direita
+      softbox(10, 4, 0, -6, 5, 0.7);  // rebatedor baixo
+      softbox(6, 6, 0, 5, -7, 1.5);   // contra-luz
+      const pmrem = new THREE.PMREMGenerator(renderer);
+      scene.environment = pmrem.fromScene(studio).texture;
+      pmrem.dispose();
+
+      scene.add(new THREE.HemisphereLight(0xffffff, 0x8a8a86, 0.4));
+      const key = new THREE.DirectionalLight(0xffffff, 0.55);
       key.position.set(2.4, 4.2, 3.4);
       key.castShadow = true;
       key.shadow.mapSize.set(1024, 1024);
       key.shadow.camera.left = -4; key.shadow.camera.right = 4;
       key.shadow.camera.top = 4; key.shadow.camera.bottom = -4;
+      key.shadow.radius = 8;
       scene.add(key);
 
       const cvCover = document.createElement('canvas');
@@ -1108,34 +1194,80 @@
         t.anisotropy = renderer.capabilities.getMaxAnisotropy();
       });
 
+      coverMaps = makeEngravedMaps(TEXW, COVH);
+      spineMaps = makeEngravedMaps(256, COVH);
       coverMats = [];
       const mat = (role) => {
-        const m = new THREE.MeshStandardMaterial({ roughness: 0.8, metalness: 0.04, bumpMap: weaveBumpTexture(36 / WEAVE_SCALE, 50 / WEAVE_SCALE), bumpScale: 0.45 });
+        const m = new THREE.MeshStandardMaterial({ roughness: 0.8, metalness: 0.04, bumpMap: weaveBumpTexture(36 / WEAVE_SCALE, 50 / WEAVE_SCALE), bumpScale: 0.3, envMapIntensity: 1.15 });
         m.userData.role = role;
         coverMats.push(m);
         return m;
       };
-      const coverFaceMat = new THREE.MeshStandardMaterial({ map: coverTex, roughness: 0.8, metalness: 0.04, bumpMap: weaveBumpTexture(TEXW / WEAVE_T / WEAVE_SCALE, COVH / WEAVE_T / WEAVE_SCALE), bumpScale: 0.45 });
-      const spineFaceMat = new THREE.MeshStandardMaterial({ map: spineTex, roughness: 0.8, metalness: 0.04, bumpMap: weaveBumpTexture(256 / WEAVE_T / WEAVE_SCALE, COVH / WEAVE_T / WEAVE_SCALE), bumpScale: 0.45 });
+      const coverFaceMat = new THREE.MeshStandardMaterial({ map: coverTex, metalness: 1, roughness: 1, metalnessMap: coverMaps.metal, roughnessMap: coverMaps.rough, bumpMap: coverMaps.bump, bumpScale: 0.26, envMapIntensity: 1.3 });
+      const spineFaceMat = new THREE.MeshStandardMaterial({ map: spineTex, metalness: 1, roughness: 1, metalnessMap: spineMaps.metal, roughnessMap: spineMaps.rough, bumpMap: spineMaps.bump, bumpScale: 0.26, envMapIntensity: 1.3 });
 
       group = new THREE.Group();
       const plain = mat('base');
-      const front = new THREE.Mesh(new THREE.BoxGeometry(W, H, CT), [plain, plain, plain, plain, coverFaceMat, mat('dark')]);
+      // Capa com cantos arredondados + bevel fino, como o produto real. As UVs
+      // do ExtrudeGeometry vêm em coordenadas do shape — reescrevemos para o
+      // 0..1 da face, mantendo todas as texturas como no BoxGeometry.
+      const coverGeo = (() => {
+        const r = Math.min(W, H) * 0.035;
+        const hw = W / 2, hh = H / 2;
+        const s = new THREE.Shape();
+        s.moveTo(-hw + r, -hh);
+        s.lineTo(hw - r, -hh);
+        s.absarc(hw - r, -hh + r, r, -Math.PI / 2, 0, false);
+        s.lineTo(hw, hh - r);
+        s.absarc(hw - r, hh - r, r, 0, Math.PI / 2, false);
+        s.lineTo(-hw + r, hh);
+        s.absarc(-hw + r, hh - r, r, Math.PI / 2, Math.PI, false);
+        s.lineTo(-hw, -hh + r);
+        s.absarc(-hw + r, -hh + r, r, Math.PI, Math.PI * 1.5, false);
+        const g = new THREE.ExtrudeGeometry(s, {
+          depth: CT * 0.56, bevelEnabled: true, bevelThickness: CT * 0.22,
+          bevelSize: CT * 0.18, bevelSegments: 2, curveSegments: 10,
+        });
+        g.translate(0, 0, -CT * 0.28);
+        const posA = g.attributes.position, uvA = g.attributes.uv;
+        for (let i = 0; i < uvA.count; i++) {
+          uvA.setXY(i, posA.getX(i) / W + 0.5, posA.getY(i) / H + 0.5);
+        }
+        return g;
+      })();
+      const front = new THREE.Mesh(coverGeo, [coverFaceMat, plain]);
       front.position.z = PT / 2 + CT / 2;
-      const back = new THREE.Mesh(new THREE.BoxGeometry(W, H, CT), mat('dark'));
+      const back = new THREE.Mesh(coverGeo, mat('dark'));
       back.position.z = -(PT / 2 + CT / 2);
       const spineDark = mat('dark');
       const spine = new THREE.Mesh(new THREE.BoxGeometry(CT, H, PT + CT * 2), [spineDark, spineFaceMat, spineDark, spineDark, spineDark, spineDark]);
       spine.position.x = -(W / 2 + CT / 2);
+      const sheetTex = (horizontal) => {
+        const c = document.createElement('canvas');
+        c.width = horizontal ? 64 : 512;
+        c.height = horizontal ? 512 : 64;
+        const x = c.getContext('2d');
+        x.fillStyle = '#f2ecdf';
+        x.fillRect(0, 0, c.width, c.height);
+        x.fillStyle = '#ded4bd';
+        if (horizontal) { for (let y = 0; y < c.height; y += 3) x.fillRect(0, y, c.width, 1); }
+        else { for (let xx = 0; xx < c.width; xx += 3) x.fillRect(xx, 0, 1, c.height); }
+        const t = new THREE.CanvasTexture(c);
+        if ('colorSpace' in t) t.colorSpace = THREE.SRGBColorSpace;
+        return t;
+      };
+      const paperPlain = new THREE.MeshStandardMaterial({ color: 0xf2ecdf, roughness: 0.92 });
+      const paperEdge = new THREE.MeshStandardMaterial({ map: sheetTex(true), roughness: 0.92 });
+      const paperFlat = new THREE.MeshStandardMaterial({ map: sheetTex(false), roughness: 0.92 });
       const pages = new THREE.Mesh(
         new THREE.BoxGeometry(W - 0.05, H - 0.07, PT),
-        new THREE.MeshStandardMaterial({ color: 0xf2ecdf, roughness: 0.92 })
+        [paperEdge, paperPlain, paperFlat, paperFlat, paperPlain, paperPlain]
       );
       pages.position.x = -0.015;
       [front, back, spine, pages].forEach((m) => { m.castShadow = true; m.receiveShadow = true; group.add(m); });
       scene.add(group);
 
-      const ground = new THREE.Mesh(new THREE.PlaneGeometry(20, 20), new THREE.ShadowMaterial({ opacity: 0.2 }));
+      const ground = new THREE.Mesh(new THREE.PlaneGeometry(20, 20), new THREE.ShadowMaterial({ opacity: 0.25 }));
       ground.rotation.x = -Math.PI / 2;
       ground.position.y = -(H / 2) - 0.32;
       ground.receiveShadow = true;
@@ -1155,6 +1287,7 @@
       // drag-to-rotate (pointer events; touch-action:none já está no CSS)
       let px = 0, dragging = false, lastDx = 0;
       host.addEventListener('pointerdown', (e) => {
+        interacted = true;
         dragging = true; px = e.clientX; lastDx = 0;
         host.classList.add('dragging');
         host.setPointerCapture(e.pointerId);
@@ -1174,11 +1307,15 @@
       host.addEventListener('pointerup', up);
       host.addEventListener('pointercancel', up);
 
+      let interacted = false;
+      const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const swayT0 = performance.now();
       const loop = () => {
         spin.try_ += spin.vy; spin.vy *= 0.94;
         spin.ry += (spin.try_ - spin.ry) * 0.14;
         spin.rx += (spin.trx - spin.rx) * 0.14;
-        group.rotation.y = spin.ry;
+        const sway = (!interacted && !reducedMotion) ? Math.sin((performance.now() - swayT0) / 2400) * 0.045 : 0;
+        group.rotation.y = spin.ry + sway;
         group.rotation.x = spin.rx;
         renderer.render(scene, camera);
         raf = requestAnimationFrame(loop);
