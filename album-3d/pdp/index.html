@@ -1,0 +1,1002 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PDP Big Pocket — preview 3D (FN-788)</title>
+<style>
+  /* Tokens que na loja vêm do critical.css / pdp-shared.css do tema */
+  :root {
+    --color-bg-subtle: #f4f4f4;
+    --color-dark: #151616;
+    --radius-md: 12px;
+    --radius-sm: 8px;
+    --space-xs: 4px;
+    --page-width: 1200px;
+
+    /* ── VERBATIM product-b.liquid:2306–2311 ── */
+    --pdp-gold: #d4af37;
+    --foil-gold-metal: linear-gradient(180deg, hsl(45 96% 72%) 0%, hsl(43 98% 60%) 28%, hsl(38 95% 52%) 55%, hsl(33 92% 46%) 78%, hsl(29 88% 40%) 100%);
+    --foil-gold-brush: repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.1) 0 1px, rgba(0, 0, 0, 0.07) 1px 2px, transparent 2px 5px);
+    --foil-gold-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='90' height='90'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='0.78' intercept='0.11'/%3E%3CfeFuncG type='linear' slope='0.78' intercept='0.11'/%3E%3CfeFuncB type='linear' slope='0.78' intercept='0.11'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    color: #151616;
+    background: #fff;
+  }
+  img { display: block; } /* mesmo reset do critical.css da loja */
+
+  .poc-bar {
+    display: flex; flex-wrap: wrap; gap: 4px 14px; align-items: baseline;
+    padding: 10px 20px; background: #151616; color: #fff; font-size: 12.5px;
+  }
+  .poc-bar b { letter-spacing: 0.04em; }
+  .poc-bar span { opacity: 0.75; }
+  .poc-bar a { color: #e8cf8e; }
+
+  .pdp__inner {
+    max-width: var(--page-width);
+    margin: 0 auto;
+    padding: 28px 20px 64px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 36px;
+  }
+  @media (max-width: 749px) { .pdp__inner { grid-template-columns: 1fr; } }
+
+  /* ── Gallery — VERBATIM product-b.liquid:2344–2379 ── */
+  .pdp-gallery__stage {
+    position: relative;
+    background: var(--color-bg-subtle);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    aspect-ratio: 1 / 1;
+  }
+  .pdp-gallery__slide {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 160ms ease;
+    pointer-events: none;
+  }
+  .pdp-gallery__slide.is-active { opacity: 1; pointer-events: auto; }
+  .pdp-gallery__slide .image,
+  .pdp-gallery__slide img { width: 100%; height: 100%; object-fit: cover; }
+
+  /* ── Preview layer — VERBATIM product-b.liquid:4474–4597 ── */
+  .pdp-preview-layer { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
+  .pdp-preview-stage {
+    position: absolute; inset: 0;
+    display: flex; justify-content: center; align-items: center;
+    background: #ebebeb;
+  }
+  .pdp-preview {
+    position: relative; width: 100%; max-height: 100%;
+    aspect-ratio: 1915 / 1634;
+    overflow: hidden;
+    container-type: inline-size;
+  }
+  .pdp-preview__img { display: block; width: 100%; height: 100%; object-fit: contain; }
+  .pdp-preview__cover,
+  .pdp-preview__side {
+    position: absolute; z-index: 1; margin: 0;
+    transform: translate(-50%, -50%);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 1cqw; text-align: center; text-transform: uppercase; white-space: nowrap;
+    font-family: 'Times New Roman', Times, serif; font-weight: 500;
+  }
+  .pdp-preview__cover { left: var(--cx, 53%); top: var(--cy, 42%); }
+  .pdp-preview__side { left: var(--sx, 50%); top: var(--sy, 87%); }
+  .pdp-preview__line { margin: 0; font-size: var(--fs, 4cqw); line-height: 1; }
+  .pdp-preview__ico {
+    display: inline-block; width: 1em; height: 1em; object-fit: contain;
+    vertical-align: -0.12em; margin-left: 0.2em;
+  }
+  .pdp-preview--gold .pdp-preview__ico {
+    filter: invert(62%) sepia(56%) saturate(411%) hue-rotate(8deg) brightness(91%) contrast(85%);
+  }
+  .pdp-preview--silver .pdp-preview__ico {
+    filter: invert(49%) sepia(0) saturate(0%) hue-rotate(181deg) brightness(1.3) contrast(1.15);
+  }
+  .pdp-preview--gold .pdp-preview__line {
+    text-shadow:
+      0.12cqw 0.16cqw 0.5px rgba(255, 240, 200, 0.55),
+      -0.12cqw -0.18cqw 0.5px rgba(120, 55, 0, 0.5);
+    background-image: var(--foil-gold-brush), var(--foil-gold-grain), var(--foil-gold-metal);
+    background-blend-mode: overlay, soft-light, normal;
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+  }
+  .pdp-preview--silver .pdp-preview__line {
+    background-image:
+      repeating-linear-gradient(to right, hsla(0, 0%, 100%, 0) 0%, hsla(0, 0%, 100%, 0) 6%, hsla(0, 0%, 100%, 0.1) 7.5%),
+      repeating-linear-gradient(to right, hsla(0, 0%, 0%, 0) 0%, hsla(0, 0%, 0%, 0) 4%, hsla(0, 0%, 0%, 0.03) 4.5%),
+      repeating-linear-gradient(to right, hsla(0, 0%, 100%, 0) 0%, hsla(0, 0%, 100%, 0) 1.2%, hsla(0, 0%, 100%, 0.15) 2.2%),
+      linear-gradient(180deg, hsl(0, 0%, 78%) 0%, hsl(0, 0%, 90%) 47%, hsl(0, 0%, 78%) 53%, hsl(0, 0%, 70%) 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+    text-shadow:
+      0.12cqw 0.16cqw 0.5px rgba(255, 255, 255, 0.4),
+      -0.12cqw -0.18cqw 0.5px rgba(0, 0, 0, 0.55);
+  }
+
+  /* ── Novo: camada 3D (substitui o Preview 2D) ───────────── */
+  .pdp-preview3d {
+    position: absolute; inset: 0;
+    background: #ebebeb;               /* mesmo backdrop das fotos de preview */
+    pointer-events: auto;              /* a layer é pointer-events:none — reativa aqui */
+    touch-action: none;                /* não briga com o scroll no mobile */
+    cursor: grab;
+  }
+  .pdp-preview3d.dragging { cursor: grabbing; }
+  .pdp-preview3d canvas { display: block; width: 100%; height: 100%; }
+  .pdp-preview3d__hint {
+    position: absolute; left: 0; right: 0; bottom: 8px; text-align: center;
+    font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
+    color: #8a8a8a; pointer-events: none;
+  }
+  .pdp-preview-toggle {
+    position: absolute; top: 10px; right: 10px; z-index: 3;
+    display: flex; border-radius: 999px; overflow: hidden;
+    border: 1px solid #d9d9d9; background: #fff;
+    pointer-events: auto;
+    font-size: 12px; font-weight: 600;
+  }
+  .pdp-preview-toggle button {
+    border: 0; background: transparent; color: #8a8a8a;
+    padding: 6px 14px; cursor: pointer; font: inherit;
+  }
+  .pdp-preview-toggle button[aria-pressed="true"] { background: var(--color-dark); color: #fff; }
+
+  /* ── Coluna direita (controles compactos; alimentam o MESMO store da PDP) ── */
+  .pdpx-config h1 { font-family: 'Times New Roman', Times, serif; font-weight: 500; font-size: 30px; margin: 0 0 4px; }
+  .pdpx-price { font-size: 22px; font-weight: 700; margin: 0 0 2px; }
+  .pdpx-price small { font-size: 13px; font-weight: 500; color: #6f6f6f; }
+  .pdpx-note { color: #6f6f6f; font-size: 13.5px; margin: 0 0 22px; }
+  .pdpx-cta {
+    display: inline-block; border: 0; cursor: pointer;
+    background: var(--color-dark); color: #fff;
+    font: 700 14px/1 inherit; letter-spacing: 0.06em;
+    padding: 16px 28px; border-radius: 999px;
+  }
+  .pdpx-label {
+    display: flex; justify-content: space-between; align-items: baseline;
+    font-size: 13px; font-weight: 700; margin: 22px 0 9px;
+  }
+  .pdpx-label span { font-weight: 500; color: #6f6f6f; }
+  .pdpx-swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(34px, 1fr)); gap: 8px; max-width: 460px; }
+  .pdpx-swatch {
+    position: relative; width: 34px; height: 34px; border-radius: 50%;
+    border: 1px solid rgba(0,0,0,0.12); cursor: pointer; padding: 0;
+  }
+  .pdpx-swatch.is-selected { outline: 2px solid var(--color-dark); outline-offset: 2px; }
+  .pdpx-swatch .check { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 15px; }
+  .pdpx-chiprow { display: flex; gap: 8px; flex-wrap: wrap; }
+  .pdpx-chip {
+    display: flex; align-items: center; gap: 8px; cursor: pointer;
+    border: 1.5px solid #d9d9d9; background: #fff; border-radius: 999px;
+    padding: 8px 16px; font: 600 13px/1 inherit; color: #454545;
+  }
+  .pdpx-chip[aria-pressed="true"] { border-color: var(--color-dark); color: var(--color-dark); }
+  .pdpx-chip .dot { width: 14px; height: 14px; border-radius: 50%; }
+  .pdpx-chip .dot--gold { background: var(--foil-gold-metal); }
+  .pdpx-chip .dot--silver { background: linear-gradient(180deg, hsl(0 0% 85%), hsl(0 0% 65%)); }
+  .pdpx-line { display: flex; gap: 8px; margin-bottom: 8px; }
+  .pdpx-line input {
+    flex: 1; min-width: 0; font: 500 15px/1.2 'Times New Roman', Times, serif; text-transform: uppercase;
+    border: 1.5px solid #d9d9d9; border-radius: 8px; padding: 10px 12px;
+  }
+  .pdpx-line input:focus-visible, .pdpx-line select:focus-visible { outline: 2px solid var(--color-dark); }
+  .pdpx-line select { border: 1.5px solid #d9d9d9; border-radius: 8px; background: #fff; font: inherit; max-width: 110px; }
+  .pdpx-linebtn {
+    border: 0; background: none; cursor: pointer; padding: 4px 0;
+    font: 600 13px/1 inherit; color: #454545; text-decoration: underline;
+  }
+  .pdpx-counter { font-size: 11.5px; color: #8a8a8a; align-self: center; min-width: 44px; text-align: right; font-variant-numeric: tabular-nums; }
+  .pdpx-back { margin-top: 26px; }
+</style>
+</head>
+<body>
+
+<div class="poc-bar">
+  <b>PoC FN-788</b>
+  <span>PDP variante B · Big Pocket · dados reais da loja · Preview 2D substituído por 3D</span>
+  <a href="../">← demo comparativo</a>
+</div>
+
+<section class="pdp">
+  <div class="pdp__inner">
+
+    <!-- ── Esquerda: galeria — markup VERBATIM product-b.liquid:139–170 (1 mídia) ── -->
+    <div class="pdp__gallery">
+      <div class="pdp-gallery" data-pdp-gallery>
+        <div class="pdp-gallery__stage">
+          <div class="pdp-gallery__slide is-active" data-slide="0">
+            <img src="https://cdn.shopify.com/s/files/1/0787/3131/3301/files/Big_01_0a7655bd-7325-4b69-bbc5-ef7c32f2d951_900x.jpg?v=1784810488" alt="Big Pocket" loading="eager">
+          </div>
+          <div id="pdp-preview-layer" class="pdp-preview-layer" aria-hidden="true"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Direita: configurador ── -->
+    <div class="pdp__config pdpx-config">
+      <div id="pdp-configurator-root"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Config real (dados da loja via Admin API; mesmo shape do #pdp-config da section) ── -->
+<script type="application/json" id="pdp-config">
+{
+  "product": {
+    "title": "Big Pocket",
+    "slug": "big-pocket",
+    "basePrice": 59000,
+    "previewBase": "https://cdn.shopify.com/s/files/1/0787/3131/3301/files/Big_01_0a7655bd-7325-4b69-bbc5-ef7c32f2d951_900x.jpg?v=1784810488"
+  },
+  "variants": [
+    { "id": 47399644790933, "title": "20 fotos", "price": 59000 },
+    { "id": 47399645806741, "title": "35 fotos", "price": 71000 },
+    { "id": 47399646822549, "title": "50 fotos", "price": 82000 },
+    { "id": 47399647838357, "title": "70 fotos", "price": 98000 }
+  ],
+  "colors": [
+    { "label": "Off White", "hex": "#fbf1d9" }, { "label": "Bege", "hex": "#a69572" },
+    { "label": "Caqui", "hex": "#6d6146" }, { "label": "Marrom", "hex": "#4d422b" },
+    { "label": "Cinza Claro", "hex": "#9ca6a1" }, { "label": "Cinza Escuro", "hex": "#4a5258" },
+    { "label": "Amarelo", "hex": "#fbe02d" }, { "label": "Mostarda", "hex": "#b87828" },
+    { "label": "Coral", "hex": "#b4302a" }, { "label": "Cereja", "hex": "#990c16" },
+    { "label": "Vermelho", "hex": "#8b1226" }, { "label": "Vinho", "hex": "#42111c" },
+    { "label": "Rosa Bebê", "hex": "#e495ad" }, { "label": "Rosa Real", "hex": "#e88eb2" },
+    { "label": "Rosa Pink", "hex": "#dd3db6" }, { "label": "Rosa Queimado", "hex": "#b33571" },
+    { "label": "Verde Bandeira", "hex": "#2a3a2b" }, { "label": "Verde Alecrim", "hex": "#3a5449" },
+    { "label": "Verde Limão", "hex": "#bad349" }, { "label": "Verde Oliva", "hex": "#454e1b" },
+    { "label": "Verde Menta", "hex": "#91bcae" }, { "label": "Verde Pistache", "hex": "#b5b67e" },
+    { "label": "Turquesa", "hex": "#51abca" }, { "label": "Azul Céu", "hex": "#7abcd8" },
+    { "label": "Azul Bebê", "hex": "#b9daf8" }, { "label": "Lilás", "hex": "#8076c7" },
+    { "label": "Azul Royal", "hex": "#253566" }, { "label": "Azul Marinho", "hex": "#232e38" },
+    { "label": "Púrpura", "hex": "#7b3b7a" }, { "label": "Mascavo", "hex": "#a78f2b" },
+    { "label": "Preto", "hex": "#2e2e2e" }, { "label": "Piscina", "hex": "#b7e5e0" }
+  ],
+  "colorImages": [
+    "https://cdn.shopify.com/s/files/1/0787/3131/3301/files/PKTBKBIG-01-Off_White_900x.webp?v=1780336241",
+    "https://cdn.shopify.com/s/files/1/0787/3131/3301/files/PKTBKBIG-02-Bege_900x.webp?v=1780337935",
+    "https://cdn.shopify.com/s/files/1/0787/3131/3301/files/PKTBKBIG-03-Caqui_900x.webp?v=1780337935",
+    "https://cdn.shopify.com/s/files/1/0787/3131/3301/files/PKTBKBIG-04-Marrom_900x.webp?v=1780337935",
+    "https://cdn.shopify.com/s/files/1/0787/3131/3301/files/PKTBKBIG-05-Cinza_Claro_900x.webp?v=1780336308",
+    "https://cdn.shopify.com/s/files/1/0787/3131/3301/files/PKTBKBIG-06-Cinza_Escuro_900x.webp?v=1780337935",
+    "https://cdn.shopify.com/s/files/1/0787/3131/3301/files/PKTBKBIG-07-Amarela_900x.webp?v=1780337935",
+    "https://cdn.shopify.com/s/files/1/0787/3131/3301/files/PKTBKBIG-08-Mostarda_900x.webp?v=1780337935",
+    "https://cdn.shopify.com/s/files/1/0787/3131/3301/files/PKTBKBIG-09-Coral_900x.webp?v=1780337935",
+    "https://cdn.shopify.com/s/files/1/0787/3131/3301/files/PKTBKBIG-10-Cereja_900x.webp?v=1780336379",
+    "https://cdn.shopify.com/s/files/1/0787/3131/3301/files/PKTBKBIG-11-Vermelho_900x.webp?v=1780337935",
+    "https://cdn.shopify.com/s/files/1/0787/3131/3301/files/PKTBKBIG-12-Vinho_900x.webp?v=1780337935",
+    "https://cdn.shopify.com/s/files/1/0787/3131/3301/files/PKTBKBIG-13-Rosa_Bebe_900x.webp?v=1780337935",
+    "https://cdn.shopify.com/s/files/1/0787/3131/3301/files/PKTBKBIG-14-Rosa_Real_900x.webp?v=1780337935",
+    "https://cdn.shopify.com/s/files/1/0787/3131/3301/files/PKTBKBIG-15-Rosa_Pink_900x.webp?v=1780336453",
+    "https://cdn.shopify.com/s/files/1/0787/3131/3301/files/PKTBKBIG-16-Rosa_Queimado_900x.webp?v=1780337935",
+    "https://cdn.shopify.com/s/files/1/0787/3131/3301/files/PKTBKBIG-17-Verde_Bandeira_900x.webp?v=1780337935",
+    "https://cdn.shopify.com/s/files/1/0787/3131/3301/files/PKTBKBIG-18-Verde_Alecrim_900x.webp?v=1780336494",
+    "https://cdn.shopify.com/s/files/1/0787/3131/3301/files/PKTBKBIG-19-Verde_Limao_900x.webp?v=1780337935",
+    "https://cdn.shopify.com/s/files/1/0787/3131/3301/files/PKTBKBIG-20-Verde_Oliva_900x.webp?v=1780337935",
+    "https://cdn.shopify.com/s/files/1/0787/3131/3301/files/PKTBKBIG-21-Verde_Menta_900x.webp?v=1780337935",
+    "https://cdn.shopify.com/s/files/1/0787/3131/3301/files/PKTBKBIG-22-Verde_Pistache_900x.webp?v=1780337935",
+    "https://cdn.shopify.com/s/files/1/0787/3131/3301/files/PKTBKBIG-23-Turquesa_900x.webp?v=1780337935",
+    "https://cdn.shopify.com/s/files/1/0787/3131/3301/files/PKTBKBIG-24-Azul_Ceu_900x.webp?v=1780337935",
+    "https://cdn.shopify.com/s/files/1/0787/3131/3301/files/PKTBKBIG-25-Azul_Bebe_900x.webp?v=1780337935",
+    "https://cdn.shopify.com/s/files/1/0787/3131/3301/files/PKTBKBIG-26-Lilas_900x.webp?v=1780336609",
+    "https://cdn.shopify.com/s/files/1/0787/3131/3301/files/PKTBKBIG-27-Azul_Royal_900x.webp?v=1780337935",
+    "https://cdn.shopify.com/s/files/1/0787/3131/3301/files/PKTBKBIG-28-Azul_Marinho_900x.webp?v=1780337935",
+    "https://cdn.shopify.com/s/files/1/0787/3131/3301/files/PKTBKBIG-29-Purpura_900x.webp?v=1780337935",
+    "https://cdn.shopify.com/s/files/1/0787/3131/3301/files/PKTBKBIG-30-Mascavo_900x.webp?v=1780337935",
+    "https://cdn.shopify.com/s/files/1/0787/3131/3301/files/PKTBKBIG-31-Preto_900x.webp?v=1780337939",
+    "https://cdn.shopify.com/s/files/1/0787/3131/3301/files/PKTBKBIG-32-Piscina_900x.webp?v=1784833226"
+  ],
+  "foils": [
+    { "id": "dourado", "label": "dourado", "hex": "#d4af37" },
+    { "id": "prata", "label": "prata", "hex": "#c0c0c0" }
+  ],
+  "charLimits": { "cover": { "P": 23, "M": 17 }, "spine": { "P": 30 } },
+  "maxLines": 3,
+  "strings": {
+    "colorLabel": "Cor",
+    "foilLabel": "Cor do texto",
+    "titleSizeLabel": "Tamanho do título da capa",
+    "sideSizeLabel": "Tamanho do texto da lateral",
+    "coverTextLabel": "Texto para a capa",
+    "sideTextLabel": "Texto para a lateral",
+    "coverTextPlaceholder": "Ex: FAMÍLIA",
+    "sideTextPlaceholder": "Ex: MEMÓRIAS",
+    "addLineLabel": "Adicionar linha",
+    "removeLineLabel": "Remover linha",
+    "symbolsTitle": "Escolha um dos nossos símbolos",
+    "symbolsRemove": "Remover",
+    "personalizeNow": "PERSONALIZAR AGORA",
+    "nowDesc": "Escolha agora a cor da capa e o texto gravado na frente e na lateral.",
+    "installmentsPrefix": "ou em até"
+  }
+}
+</script>
+
+<script type="importmap">
+  { "imports": {
+      "preact": "./vendor/preact.module.js",
+      "preact/hooks": "./vendor/hooks.module.js",
+      "htm": "./vendor/htm.module.js"
+  } }
+</script>
+<script src="../three.min.js"></script>
+
+<script type="module">
+  const root = document.getElementById('pdp-configurator-root');
+  const cfg = JSON.parse(document.getElementById('pdp-config').textContent);
+
+  // No tema: esm.sh (product-b.liquid:684–689). Aqui: mesmos pacotes/versões,
+  // vendorizados e resolvidos pelo import map acima (o proxy local bloqueia esm.sh).
+  const [{ h, render }, { useState, useEffect, useRef }, htmModule] = await Promise.all([
+    import('preact'),
+    import('preact/hooks'),
+    import('htm'),
+  ]);
+  const html = htmModule.default.bind(h);
+
+  // ── VERBATIM product-b.liquid:692–693 ──
+  const BRL = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
+  const money = (cents) => BRL.format((cents || 0) / 100);
+  const S = cfg.strings;
+
+  // Símbolos do tema (assets/cover-sym-*.svg), inlinados como data: URI para o
+  // canvas 3D poder rasterizá-los sem cross-origin. Mesmo shape de cfg.icons.
+  const ICON_SVGS = {
+    'heart': `<svg width="24" height="24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M16.688 3.75c-1.936 0-3.631.832-4.688 2.24-1.057-1.408-2.752-2.24-4.687-2.24A5.82 5.82 0 0 0 1.5 9.563c0 6.562 9.73 11.874 10.145 12.093a.75.75 0 0 0 .71 0c.415-.22 10.145-5.531 10.145-12.093a5.82 5.82 0 0 0-5.812-5.813M12 20.138c-1.712-.998-9-5.542-9-10.576A4.32 4.32 0 0 1 7.313 5.25c1.823 0 3.354.971 3.993 2.531a.75.75 0 0 0 1.388 0c.64-1.563 2.17-2.531 3.993-2.531A4.32 4.32 0 0 1 21 9.563c0 5.025-7.29 9.576-9 10.574" fill="#000"/></svg>`,
+    'infinity': `<svg width="24" height="24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M22.931 12c0 2.82-2.28 5.1-5.1 5.1-1.35 0-2.65-.54-3.61-1.49l-.03-.03-5.46-6.17a3.646 3.646 0 0 0-5.15.03 3.646 3.646 0 0 0 .03 5.15c1.42 1.4 3.7 1.4 5.12 0l2.77-2.87c.27-.3.05.35.35.62s.71.35.45.65l-2.49 2.59-.03.03a5.11 5.11 0 0 1-7.22 0 5.11 5.11 0 0 1 0-7.22c2-1.99 5.23-1.99 7.22 0l.03.03 5.46 6.17a3.646 3.646 0 0 0 5.15-.03 3.646 3.646 0 0 0-.03-5.15c-1.42-1.4-3.7-1.4-5.12 0l-2.73 2.83c-.27.3-.17-.23-.47-.5s-.43-.63-.16-.93l2.28-2.38.03-.03a5.11 5.11 0 0 1 7.22 0c.96.96 1.49 2.25 1.49 3.61z" fill="#010101"/></svg>`,
+    'plane': `<svg width="24" height="24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="m17.969 10.143 3.05-2.87h.01a3.05 3.05 0 0 0 0-4.31 3.036 3.036 0 0 0-4.3 0h-.01l-2.87 3.06-8.52-3.09a.61.61 0 0 0-.64.14l-2.43 2.43a.604.604 0 0 0 .1.94l6.67 4.45-1.73 1.73h-2.18c-.16 0-.32.06-.43.18l-2.43 2.42c-.24.24-.24.62 0 .86.06.06.13.1.2.14l3.81 1.52 1.52 3.8a.6.6 0 0 0 .79.34c.08-.03.15-.08.21-.14l2.42-2.42c.12-.11.18-.27.19-.43v-2.18l1.73-1.73 4.45 6.67c.19.28.56.35.84.17.03-.02.06-.05.09-.08l2.43-2.43c.17-.17.22-.42.14-.64l-3.1-8.53zm.2 10.22-4.45-6.67a.61.61 0 0 0-.45-.27h-.06c-.16 0-.32.06-.43.18l-2.43 2.43c-.11.11-.18.27-.18.43v2.18l-1.6 1.6-1.28-3.19a.6.6 0 0 0-.34-.34l-3.19-1.28 1.6-1.6h2.18c.16 0 .32-.06.43-.18l2.43-2.43c.24-.24.24-.62 0-.86-.03-.03-.06-.05-.09-.08l-6.67-4.45 1.63-1.63 8.55 3.11c.23.08.48.02.65-.15l3.14-3.33c.75-.67 1.9-.61 2.57.14.62.69.62 1.74 0 2.44l-3.33 3.14c-.18.17-.24.42-.15.65l3.11 8.54-1.63 1.63z" fill="#010101"/></svg>`,
+    'paw': `<svg width="24" height="24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M19.805 7.52c-1.44 0-2.6 1.16-2.6 2.6s1.16 2.6 2.6 2.6 2.6-1.16 2.6-2.6-1.16-2.6-2.6-2.6m0 3.72c-.62 0-1.11-.5-1.11-1.11s.5-1.11 1.11-1.11 1.11.5 1.11 1.11-.5 1.11-1.11 1.11m-13.01-1.11c0-1.44-1.16-2.6-2.6-2.6s-2.6 1.15-2.6 2.59 1.16 2.6 2.6 2.6 2.6-1.16 2.6-2.6zm-2.6 1.11c-.62 0-1.11-.5-1.11-1.11s.5-1.11 1.11-1.11 1.11.5 1.11 1.11-.5 1.11-1.11 1.11m4.46-2.97c1.44 0 2.6-1.16 2.6-2.6s-1.16-2.6-2.6-2.6-2.6 1.16-2.6 2.6 1.16 2.6 2.6 2.6m0-3.72c.62 0 1.11.5 1.11 1.11s-.5 1.11-1.11 1.11-1.11-.5-1.11-1.11.5-1.11 1.11-1.11m6.69 3.72c1.44 0 2.6-1.16 2.6-2.6s-1.16-2.6-2.6-2.6-2.6 1.16-2.6 2.6 1.16 2.6 2.6 2.6m0-3.72c.62 0 1.11.5 1.11 1.11s-.5 1.11-1.11 1.11-1.11-.5-1.11-1.11.5-1.11 1.11-1.11m2.15 9.37a3.3 3.3 0 0 1-1.57-1.96 4.087 4.087 0 0 0-5.07-2.78 4.09 4.09 0 0 0-2.78 2.78c-.24.83-.8 1.54-1.56 1.96a3.71 3.71 0 0 0-1.5 5.04 3.715 3.715 0 0 0 4.71 1.66c1.45-.6 3.09-.6 4.54 0 1.88.82 4.07-.04 4.89-1.93.77-1.78.05-3.85-1.66-4.76zm-1.78 5.5c-.3 0-.6-.06-.88-.18a7.48 7.48 0 0 0-5.69 0c-1.13.49-2.44-.04-2.93-1.17a2.224 2.224 0 0 1 1.01-2.85 4.75 4.75 0 0 0 2.27-2.85c.4-1.38 1.84-2.17 3.22-1.77.86.25 1.52.92 1.77 1.77a4.74 4.74 0 0 0 2.28 2.85c1.09.58 1.49 1.93.91 3.02-.39.73-1.15 1.18-1.97 1.18z" fill="#010101"/></svg>`,
+    'flower': `<svg width="24" height="24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M19.293 12.125c-.07-.04-.15-.08-.23-.12a3.54 3.54 0 0 0 1.56-4.95c-.97-1.7-3.13-2.3-4.83-1.33-.01 0-.03.02-.04.02-.07.04-.15.09-.22.14 0-.09.01-.18.01-.27a3.54 3.54 0 0 0-3.54-3.54 3.547 3.547 0 0 0-3.53 3.81 3.55 3.55 0 0 0-5.07 1.12 3.55 3.55 0 0 0 1.26 4.85c.01 0 .03.02.04.02.07.04.15.08.23.12a3.564 3.564 0 0 0-1.56 4.96c.97 1.7 3.13 2.3 4.83 1.33.01 0 .03-.02.04-.02.07-.04.15-.09.22-.14 0 .09-.01.18-.01.26a3.54 3.54 0 0 0 3.54 3.54c1.95 0 3.54-1.59 3.54-3.54 0-.08 0-.17-.01-.26.07.05.15.1.22.14a3.55 3.55 0 0 0 2.69.35 3.54 3.54 0 0 0 2.5-4.34c-.24-.91-.84-1.68-1.65-2.15zm-9.42-.12c0-1.17.95-2.13 2.13-2.13s2.13.95 2.13 2.13-.95 2.13-2.13 2.13-2.13-.95-2.13-2.13m6.58-5.03c1.02-.59 2.32-.24 2.9.78.59 1.02.24 2.32-.78 2.9-.56.32-1.65.54-3.11.64-.15-.75-.55-1.43-1.12-1.94.81-1.22 1.55-2.06 2.11-2.38m-4.46-3.47c1.17 0 2.13.95 2.13 2.13 0 .64-.35 1.7-1.01 3.02-.73-.24-1.51-.24-2.24 0-.65-1.32-1.01-2.38-1.01-3.02 0-1.17.95-2.13 2.13-2.13m-7.36 4.25a2.12 2.12 0 0 1 2.9-.78c.56.32 1.29 1.16 2.11 2.38-.57.51-.97 1.19-1.12 1.94-1.47-.09-2.56-.32-3.11-.64a2.12 2.12 0 0 1-.78-2.9m2.9 9.28c-1.02.59-2.32.24-2.9-.78-.59-1.02-.24-2.32.78-2.9.56-.32 1.65-.54 3.11-.64.15.75.55 1.43 1.12 1.94-.81 1.22-1.55 2.06-2.11 2.38m4.46 3.47c-1.17 0-2.13-.95-2.13-2.13 0-.64.35-1.7 1.01-3.02.73.24 1.51.24 2.24 0 .65 1.32 1.01 2.38 1.01 3.02 0 1.17-.95 2.13-2.13 2.13m7.36-4.25a2.12 2.12 0 0 1-2.9.78c-.56-.32-1.29-1.16-2.11-2.38.57-.51.97-1.19 1.12-1.94 1.47.09 2.56.32 3.11.64 1.02.59 1.37 1.89.78 2.9" fill="#010101"/></svg>`,
+    'butterfly': `<svg width="24" height="24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21.807 4.468c-.349-.443-1.017-.96-2.223-.96-1.583 0-3.609 1.034-5.418 2.768a12 12 0 0 0-1.422 1.596V4.975a.75.75 0 0 0-.754-.738.75.75 0 0 0-.754.738v2.897a13 13 0 0 0-1.422-1.596c-1.81-1.734-3.835-2.767-5.418-2.767-1.196 0-1.874.525-2.214.959-.64.802-1.14 2.214-.018 6.53.565 2.187 1.827 3.026 2.873 3.34a3.98 3.98 0 0 0 1.347 5.553c1.903 1.143 4.39.6 5.615-1.227 1.244 1.863 3.807 2.389 5.71 1.171 1.865-1.199 2.421-3.634 1.253-5.497 1.046-.314 2.299-1.153 2.873-3.34.631-2.425 1.121-5.1-.019-6.53zM8.617 18.922c-1.46-.028-2.619-1.2-2.59-2.629.018-1.282.998-2.352 2.298-2.518a.74.74 0 0 0 .678-.803.747.747 0 0 0-.82-.664h-.027a4.1 4.1 0 0 0-1.941.73c-.792 0-2.063-.333-2.6-2.408C3.34 9.587 2.53 6.414 3.37 5.353c.131-.166.386-.396 1.036-.396 2.553 0 6.84 4.123 6.84 6.577v4.805c0 1.42-1.178 2.574-2.629 2.574zm11.758-8.283c-.537 2.084-1.809 2.417-2.6 2.407a4.1 4.1 0 0 0-1.941-.728.737.737 0 0 0-.839.636.73.73 0 0 0 .65.821h.029c1.45.157 2.496 1.43 2.336 2.841-.16 1.42-1.46 2.444-2.902 2.288-1.337-.139-2.345-1.246-2.355-2.555v-4.806c0-2.463 4.287-6.577 6.84-6.577.65 0 .904.221 1.036.397.839 1.06.02 4.233-.254 5.276" fill="#010101"/></svg>`,
+    'world-globe': `<svg width="24" height="24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2.79c-5.09 0-9.21 4.12-9.21 9.21s4.12 9.21 9.21 9.21 9.21-4.12 9.21-9.21c0-5.08-4.12-9.21-9.21-9.21M19.8 12c0 1-.19 1.99-.57 2.92l-3.96-2.44c-.17-.1-.36-.17-.55-.2l-2.02-.27c-.57-.07-1.13.2-1.42.7h-.77l-.34-.7c-.19-.39-.55-.68-.97-.77l-.71-.15.69-1.22h1.48c.24 0 .48-.06.68-.18l1.09-.6c.1-.05.18-.12.27-.19l2.38-2.16c.49-.44.61-1.17.29-1.74l-.03-.06a7.8 7.8 0 0 1 4.46 7.05zm-6.44-7.67.77 1.38-2.38 2.16-1.08.6H9.19c-.51 0-.98.27-1.23.71l-.77 1.35-.9-2.4.97-2.29a7.78 7.78 0 0 1 6.11-1.51zM4.21 12c0-1.16.26-2.3.76-3.35l1 2.68c.17.45.56.78 1.03.89l1.9.41.34.7c.24.49.73.8 1.28.8h.13l-.64 1.44c-.23.52-.13 1.12.25 1.54h.01l1.74 1.8-.17.89c-4.23-.1-7.62-3.56-7.62-7.79zm9.09 7.69.1-.51c.08-.44-.05-.9-.35-1.23l-.01-.01-1.73-1.79 1.21-2.72 2.02.27 4.05 2.49a7.85 7.85 0 0 1-5.28 3.51z" fill="#010101"/></svg>`,
+    'snowflake': `<svg width="24" height="24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21.167 14.12c.1.41-.15.83-.56.93l-2.36.58.62 2.31c.11.41-.13.83-.54.94a.76.76 0 0 1-.94-.54l-.74-2.76-3.89-2.25v4.49l2.08 2.08c.3.3.3.79 0 1.09s-.79.3-1.09 0l-1.76-1.76-1.76 1.76c-.3.3-.79.3-1.09 0s-.3-.79 0-1.09l2.08-2.08v-4.49l-3.89 2.25-.74 2.76a.76.76 0 0 1-.74.57c-.07 0-.13 0-.2-.03a.765.765 0 0 1-.54-.94l.62-2.31-2.36-.58a.77.77 0 0 1-.56-.93c.1-.41.52-.66.93-.56l2.83.69 3.9-2.26-3.9-2.25-2.83.69a.77.77 0 0 1-.95-.75c0-.35.24-.66.58-.75l2.36-.58-.62-2.32c-.11-.41.13-.83.54-.94s.83.13.94.54l.74 2.76 3.89 2.25V6.18L9.137 4.1c-.3-.3-.3-.79 0-1.09s.79-.3 1.09 0l1.76 1.76 1.76-1.76c.3-.3.79-.3 1.09 0s.3.79 0 1.09l-2.08 2.08v4.49l3.89-2.25.74-2.76c.11-.41.53-.65.94-.54s.65.53.54.94l-.62 2.31 2.36.58c.41.09.68.5.59.91-.08.36-.4.62-.77.61-.06 0-.12 0-.18-.02l-2.83-.69-3.9 2.25 3.9 2.25 2.83-.69c.41-.1.83.15.93.56z" fill="#010101"/></svg>`,
+  };
+  const ICON_LABELS = { 'heart': 'Coração', 'infinity': 'Infinito', 'plane': 'Avião', 'paw': 'Patinha', 'flower': 'Flor', 'butterfly': 'Borboleta', 'world-globe': 'Globo', 'snowflake': 'Floco de neve' };
+  cfg.icons = Object.keys(ICON_SVGS).map((name) => ({
+    name,
+    url: 'data:image/svg+xml;utf8,' + encodeURIComponent(ICON_SVGS[name]),
+    label: ICON_LABELS[name] || name,
+  }));
+
+  // ── VERBATIM product-b.liquid:699–704 ──
+  const iconMap = {};
+  const iconLabelMap = {};
+  (cfg.icons || []).forEach((ic) => {
+    iconMap[ic.name] = ic.url;
+    iconLabelMap[ic.name] = ic.label || ic.name;
+  });
+
+  // ── store — VERBATIM product-b.liquid:758–774 ──
+  const store = {
+    state: { mode: 'main', colorIndex: 0, foilId: 'prata', coverText: '', sideText: '', titleSize: 'M', sideSize: 'P', sideIcon: '' },
+    subs: new Set(),
+    set(patch) {
+      this.state = Object.assign({}, this.state, patch);
+      this.subs.forEach((fn) => fn(this.state));
+    },
+  };
+  function useStore() {
+    const [s, setS] = useState(store.state);
+    useEffect(() => {
+      store.subs.add(setS);
+      setS(store.state);
+      return () => store.subs.delete(setS);
+    }, []);
+    return s;
+  }
+
+  // ── Limites por tamanho — VERBATIM product-b.liquid:783–840 (recorte) ──
+  const TEXT_LIMITS = {
+    'big-pocket': { p: 23, m: 17, g: 23, sideP: 30, sideM: 30 },
+  };
+  const SIZE_ORDER = ['P', 'M', 'G'];
+  const CL_COVER = (cfg.charLimits && cfg.charLimits.cover) || null;
+  const CL_SPINE = (cfg.charLimits && cfg.charLimits.spine) || null;
+  const titleSizes = CL_COVER ? SIZE_ORDER.filter((sizeKey) => CL_COVER[sizeKey] != null) : ['P', 'M', 'G'];
+  const sideSizes = CL_SPINE ? SIZE_ORDER.filter((sizeKey) => CL_SPINE[sizeKey] != null) : ['P', 'M'];
+  const spineMode = sideSizes.length;
+  const maxLines = Number(cfg.maxLines) || 3;
+
+  const DISALLOWED = /[^A-Za-z0-9\s.,?:;'"~`^@|()&/\-´˜ˆ¨°À-ÿ̀-ͯ]/gu;
+  const sanitizeText = (raw) => (raw || '').normalize('NFC').replace(/\p{Extended_Pictographic}/gu, '').replace(DISALLOWED, '');
+
+  const coverLimit = (size) => {
+    const sizeKey = (size || 'P').toUpperCase();
+    if (CL_COVER && CL_COVER[sizeKey] != null) return CL_COVER[sizeKey];
+    const t = TEXT_LIMITS[cfg.product.slug];
+    return t ? (t[sizeKey.toLowerCase()] || t.p) : 20;
+  };
+  const sideLimit = (size) => {
+    const sizeKey = (size || 'P').toUpperCase();
+    if (CL_SPINE && CL_SPINE[sizeKey] != null) return CL_SPINE[sizeKey];
+    const t = TEXT_LIMITS[cfg.product.slug];
+    return t ? (sizeKey === 'M' ? t.sideM : t.sideP) : 20;
+  };
+
+  // ── Âncoras do preview 2D — VERBATIM product-b.liquid:851–895 (recorte big-pocket) ──
+  const PREVIEW_POS = {
+    classic: { cx: 52.4, cy: 31.8, sx: 50, sy: 90.2 },
+    big: { cx: 52.0, cy: 32.1, sx: 50, sy: 90.3 },
+    large: { cx: 51.8, cy: 29.2, sx: 50, sy: 91.3 },
+    landscape: { cx: 51.6, cy: 29.0, sx: 50, sy: 88.6 },
+    mini: { cx: 51.0, cy: 40.6, sx: 50, sy: 86.0 },
+  };
+  const PREVIEW_FS = {
+    'classic-pocket': { coverP: 2.5, coverM: 3.66, spineP: 2.4 },
+    'big-pocket': { coverP: 1.85, coverM: 3.05, spineP: 1.85 },
+    'mini-pocket': { coverP: 4.75 },
+  };
+  const PREVIEW_GROUP_BY_SLUG = { 'classic-pocket': 'classic', 'big-pocket': 'big', 'large-pocket': 'large', 'mini-pocket': 'mini' };
+  const PREVIEW_FS_FALLBACK = { classic: 'classic-pocket', big: 'big-pocket', large: 'large-pocket', landscape: 'scrap-book-a3', mini: 'mini-pocket' };
+  const previewGroup = PREVIEW_GROUP_BY_SLUG[cfg.product.slug] || 'classic';
+  const previewGeo = PREVIEW_POS[previewGroup] || PREVIEW_POS.classic;
+  const previewFs = PREVIEW_FS[cfg.product.slug] || PREVIEW_FS[PREVIEW_FS_FALLBACK[previewGroup]] || {};
+  const coverFontFor = (size) => previewFs['cover' + (size || 'P').toUpperCase()] || previewFs.coverM || previewFs.coverP || 4;
+  const spineFontFor = (size) => previewFs['spine' + (size || 'P').toUpperCase()] || previewFs.spineP || previewFs.spineM || 3;
+
+  // ── VERBATIM product-b.liquid:898–905 ──
+  const isLightHex = (hex) => {
+    const h = (hex || '').replace('#', '');
+    if (h.length < 6) return true;
+    const r = parseInt(h.slice(0, 2), 16);
+    const g = parseInt(h.slice(2, 4), 16);
+    const b = parseInt(h.slice(4, 6), 16);
+    return (0.299 * r + 0.587 * g + 0.114 * b) / 255 > 0.6;
+  };
+
+  /* ════════════════════════════════════════════════════════════════
+     App — controles compactos. A UI é resumida (sem carrinho/frete/
+     Spotify), mas os CAMPOS DE ESTADO e o espelhamento para o store
+     são idênticos aos do App real (product-b.liquid:1171–1259).
+     ════════════════════════════════════════════════════════════════ */
+  function App() {
+    const [mode, setMode] = useState('main');
+    const [colorIndex, setColorIndex] = useState(0);
+    const [foilId, setFoilId] = useState('prata');
+    const [titleSize, setTitleSize] = useState('M');
+    const [sideSize, setSideSize] = useState('P');
+    const [coverLines, setCoverLines] = useState(['']);
+    const [coverIcons, setCoverIcons] = useState(['']);
+    const [sideText, setSideText] = useState('');
+    const [sideIcon, setSideIcon] = useState('');
+
+    // Espelha para o store — MESMOS campos do App real (product-b.liquid:1247–1259)
+    useEffect(() => {
+      store.set({
+        mode,
+        colorIndex,
+        foilId,
+        coverText: coverLines.join('\n'),
+        coverIcons,
+        sideText,
+        titleSize,
+        sideSize,
+        sideIcon,
+      });
+    }, [mode, colorIndex, foilId, coverLines, coverIcons, sideText, titleSize, sideSize, sideIcon]);
+
+    const setCoverLine = (i, raw) => {
+      const v = sanitizeText(raw).slice(0, coverLimit(titleSize));
+      setCoverLines((ls) => ls.map((l, j) => (j === i ? v : l)));
+    };
+    // Re-trunca ao trocar de tamanho, como o onTitleSize real (product-b.liquid:1948–1980)
+    const onTitleSize = (s) => {
+      setTitleSize(s);
+      setCoverLines((ls) => ls.map((l) => l.slice(0, coverLimit(s))));
+    };
+    const onSideText = (raw) => setSideText(sanitizeText(raw).slice(0, sideLimit(sideSize)));
+
+    const color = cfg.colors[colorIndex];
+    const v0 = cfg.variants[0];
+    const inst = Math.max(1, Math.min(6, Math.floor(v0.price / 9000)));
+
+    if (mode === 'main') {
+      return html`
+        <h1>${cfg.product.title}</h1>
+        <p class="pdpx-price">${money(v0.price)} <small>${S.installmentsPrefix} ${inst}x de ${money(v0.price / inst)} sem juros</small></p>
+        <p class="pdpx-note">${S.nowDesc}</p>
+        <button class="pdpx-cta" onClick=${() => setMode('config')}>${S.personalizeNow}</button>
+      `;
+    }
+
+    return html`
+      <h1>${cfg.product.title}</h1>
+
+      <div class="pdpx-label">${S.colorLabel}<span>${color.label}</span></div>
+      <div class="pdpx-swatches" role="group" aria-label=${S.colorLabel}>
+        ${cfg.colors.map((c, i) => html`
+          <button
+            key=${c.label}
+            class=${'pdpx-swatch' + (i === colorIndex ? ' is-selected' : '')}
+            style=${'background:' + c.hex}
+            title=${c.label}
+            aria-label=${c.label}
+            aria-pressed=${i === colorIndex}
+            onClick=${() => setColorIndex(i)}
+          >${i === colorIndex ? html`<span class="check" style=${'color:' + (isLightHex(c.hex) ? '#151616' : '#fff')}>✓</span>` : ''}</button>
+        `)}
+      </div>
+
+      <div class="pdpx-label">${S.foilLabel}</div>
+      <div class="pdpx-chiprow">
+        ${cfg.foils.map((f) => html`
+          <button key=${f.id} class="pdpx-chip" aria-pressed=${foilId === f.id} onClick=${() => setFoilId(f.id)}>
+            <span class=${'dot ' + (f.id === 'dourado' ? 'dot--gold' : 'dot--silver')}></span>${f.label}
+          </button>
+        `)}
+      </div>
+
+      <div class="pdpx-label">${S.titleSizeLabel}<span>${coverLimit(titleSize)} caracteres por linha</span></div>
+      <div class="pdpx-chiprow">
+        ${titleSizes.map((s) => html`
+          <button key=${s} class="pdpx-chip" aria-pressed=${titleSize === s} onClick=${() => onTitleSize(s)}>${s}</button>
+        `)}
+      </div>
+
+      <div class="pdpx-label">${S.coverTextLabel}</div>
+      ${coverLines.map((line, i) => html`
+        <div class="pdpx-line" key=${i}>
+          <input
+            type="text"
+            value=${line}
+            placeholder=${i === 0 ? S.coverTextPlaceholder : ''}
+            maxlength=${coverLimit(titleSize)}
+            onInput=${(e) => setCoverLine(i, e.target.value)}
+          />
+          <select value=${coverIcons[i] || ''} aria-label=${S.symbolsTitle}
+            onChange=${(e) => setCoverIcons((ic) => { const n = [...ic]; n[i] = e.target.value; return n; })}>
+            <option value="">— símbolo</option>
+            ${cfg.icons.map((ic) => html`<option key=${ic.name} value=${ic.name}>${ic.label}</option>`)}
+          </select>
+          <span class="pdpx-counter">${line.length}/${coverLimit(titleSize)}</span>
+        </div>
+      `)}
+      ${coverLines.length < maxLines && html`
+        <button class="pdpx-linebtn" onClick=${() => { setCoverLines((ls) => [...ls, '']); setCoverIcons((ic) => [...ic, '']); }}>+ ${S.addLineLabel}</button>
+      `}
+      ${coverLines.length > 1 && html`
+        <button class="pdpx-linebtn" style="margin-left:14px" onClick=${() => { setCoverLines((ls) => ls.slice(0, -1)); setCoverIcons((ic) => ic.slice(0, -1)); }}>− ${S.removeLineLabel}</button>
+      `}
+
+      ${spineMode > 0 && html`
+        <div class="pdpx-label">${S.sideTextLabel}<span>${sideLimit(sideSize)} caracteres</span></div>
+        <div class="pdpx-line">
+          <input type="text" value=${sideText} placeholder=${S.sideTextPlaceholder} maxlength=${sideLimit(sideSize)} onInput=${(e) => onSideText(e.target.value)} />
+          <select value=${sideIcon} aria-label=${S.symbolsTitle} onChange=${(e) => setSideIcon(e.target.value)}>
+            <option value="">— símbolo</option>
+            ${cfg.icons.map((ic) => html`<option key=${ic.name} value=${ic.name}>${ic.label}</option>`)}
+          </select>
+          <span class="pdpx-counter">${sideText.length}/${sideLimit(sideSize)}</span>
+        </div>
+      `}
+      ${spineMode === 2 && html`
+        <div class="pdpx-label">${S.sideSizeLabel}</div>
+        <div class="pdpx-chiprow">
+          ${sideSizes.map((s) => html`<button key=${s} class="pdpx-chip" aria-pressed=${sideSize === s} onClick=${() => setSideSize(s)}>${s}</button>`)}
+        </div>
+      `}
+
+      <div class="pdpx-back"><button class="pdpx-linebtn" onClick=${() => setMode('main')}>← Voltar para a galeria</button></div>
+    `;
+  }
+
+  /* ════════════════════════════════════════════════════════════════
+     Preview 2D — VERBATIM product-b.liquid:2162–2228 (o atual da PDP,
+     aqui renomeado Preview2D e mantido para comparação no toggle).
+     ════════════════════════════════════════════════════════════════ */
+  function Preview2D() {
+    const st = useStore();
+    const active = st.mode !== 'main';
+    const images = cfg.colorImages || [];
+    const targetSrc = images[st.colorIndex] || images[0] || cfg.product.previewBase || '';
+    const [displaySrc, setDisplaySrc] = useState(targetSrc);
+
+    useEffect(() => {
+      if (!active || Preview2D._warmed) return;
+      Preview2D._warmed = true;
+      images.forEach((u) => {
+        if (u) {
+          const im = new Image();
+          im.src = u;
+        }
+      });
+    }, [active]);
+
+    useEffect(() => {
+      if (!targetSrc || targetSrc === displaySrc) return undefined;
+      let cancelled = false;
+      const im = new Image();
+      const swap = () => {
+        if (!cancelled) setDisplaySrc(targetSrc);
+      };
+      im.src = targetSrc;
+      if (im.decode) {
+        im.decode().then(swap, swap);
+      } else {
+        im.onload = swap;
+        im.onerror = swap;
+      }
+      return () => {
+        cancelled = true;
+      };
+    }, [targetSrc]);
+
+    if (!active) return null;
+    const foilClass = st.foilId === 'prata' ? 'pdp-preview--silver' : 'pdp-preview--gold';
+    const coverStyle = `--cx:${previewGeo.cx}%;--cy:${previewGeo.cy}%;--fs:${coverFontFor(st.titleSize).toFixed(2)}cqw`;
+    const sideStyle = `--sx:${previewGeo.sx}%;--sy:${previewGeo.sy}%;--fs:${spineFontFor(st.sideSize).toFixed(2)}cqw`;
+    const cIcons = st.coverIcons || [];
+    const coverLines = (st.coverText || '').split('\n')
+      .map((t, i) => ({ text: t, icon: cIcons[i] || '' }))
+      .filter((l) => l.text.trim().length || l.icon);
+    const side = (st.sideText || '').trim();
+    const sideSym = st.sideIcon || '';
+    return html`
+      <div class="pdp-preview-stage">
+        <div class=${'pdp-preview ' + foilClass}>
+          ${displaySrc && html`<img class="pdp-preview__img" src=${displaySrc} alt="" draggable="false" />`}
+          ${coverLines.length > 0 && html`
+            <div class="pdp-preview__cover" style=${coverStyle}>
+              ${coverLines.map((l, i) => html`<p class="pdp-preview__line" key=${i}>${l.text}${l.icon && iconMap[l.icon] ? html`<img class="pdp-preview__ico" src=${iconMap[l.icon]} alt="" />` : ''}</p>`)}
+            </div>
+          `}
+          ${(side || sideSym) && html`
+            <div class="pdp-preview__side" style=${sideStyle}>
+              <p class="pdp-preview__line">${side}${sideSym && iconMap[sideSym] ? html`<img class="pdp-preview__ico" src=${iconMap[sideSym]} alt="" />` : ''}</p>
+            </div>
+          `}
+        </div>
+      </div>
+    `;
+  }
+
+  /* ════════════════════════════════════════════════════════════════
+     Preview 3D — o substituto. Assina o MESMO store e renderiza o
+     álbum com Three.js. Na loja, este bloco viraria assets/album-3d.js
+     carregado com import() quando mode !== 'main' (fora do LCP).
+     ════════════════════════════════════════════════════════════════ */
+  const Album3D = (() => {
+    const TEXW = 1024;
+    const W = 2.35, H = 3.05, CT = 0.09, PT = 0.5; // proporção retrato do Pocket
+    const COVH = Math.round(TEXW * (H / W)); // altura do canvas da capa
+    let renderer, scene, camera, group, coverTex, spineTex, coverMats, host, ro, raf;
+    const spin = { rx: 0.08, ry: -0.5, trx: 0.08, try_: -0.5, vy: 0 };
+    let lastState = null;
+    const iconImgs = {}; // data-URI → Image (mesma origem; sem taint no canvas)
+
+    const foilStops = (foilId) => (foilId === 'dourado'
+      ? ['hsl(45 96% 72%)', 'hsl(43 98% 60%)', 'hsl(38 95% 52%)', 'hsl(33 92% 46%)', 'hsl(29 88% 40%)'] // --foil-gold-metal
+      : ['hsl(0 0% 78%)', 'hsl(0 0% 90%)', 'hsl(0 0% 78%)', 'hsl(0 0% 70%)']);                            // prata (2D silver)
+
+    function iconImage(name) {
+      if (!name || !iconMap[name]) return null;
+      if (!iconImgs[name]) {
+        const im = new Image();
+        im.src = iconMap[name];
+        im.onload = () => { if (lastState) redraw(lastState); };
+        iconImgs[name] = im;
+      }
+      return iconImgs[name].complete && iconImgs[name].naturalWidth ? iconImgs[name] : null;
+    }
+
+    // Tinge o SVG preto com o tom médio do foil (silhueta) e devolve um canvas
+    function tintedIcon(name, px, tone) {
+      const im = iconImage(name);
+      if (!im) return null;
+      const c = document.createElement('canvas');
+      c.width = px; c.height = px;
+      const x = c.getContext('2d');
+      x.drawImage(im, 0, 0, px, px);
+      x.globalCompositeOperation = 'source-in';
+      x.fillStyle = tone;
+      x.fillRect(0, 0, px, px);
+      return c;
+    }
+
+    let linen = null;
+    function linenPattern(ctx) {
+      if (linen) return linen;
+      const c = document.createElement('canvas');
+      c.width = 128; c.height = 128;
+      const x = c.getContext('2d');
+      x.fillStyle = 'rgba(0,0,0,0)';
+      x.fillRect(0, 0, 128, 128);
+      for (let i = 0; i < 900; i++) {
+        x.fillStyle = (i % 2) ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)';
+        const horizontalThread = i % 3 !== 0;
+        x.fillRect(Math.random() * 128, Math.random() * 128, horizontalThread ? 2.2 : 1, horizontalThread ? 1 : 2.2);
+      }
+      linen = ctx.createPattern(c, 'repeat');
+      return linen;
+    }
+
+    function engraveLine(ctx, text, iconName, cx, cy, px, foilId) {
+      const stops = foilStops(foilId);
+      const label = (text || '').toUpperCase();
+      ctx.font = `500 ${px}px 'Times New Roman', Times, serif`; // mesma família do preview 2D
+      let w = ctx.measureText(label).width;
+      const iconPx = Math.round(px * 0.9);
+      const gap = label ? px * 0.22 : 0;
+      const icon = iconName ? tintedIcon(iconName, iconPx, stops[Math.floor(stops.length / 2)]) : null;
+      const total = w + (icon ? gap + iconPx : 0);
+      const startX = cx - total / 2;
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'middle';
+      // baixo-relevo: sombra clara abaixo + escura acima (gravação prensada)
+      ctx.fillStyle = 'rgba(255,255,255,0.28)';
+      ctx.fillText(label, startX, cy + Math.max(2, px * 0.035));
+      ctx.fillStyle = 'rgba(0,0,0,0.42)';
+      ctx.fillText(label, startX, cy - Math.max(2, px * 0.03));
+      const grad = ctx.createLinearGradient(0, cy - px * 0.55, 0, cy + px * 0.55);
+      stops.forEach((s, i) => grad.addColorStop(i / (stops.length - 1), s));
+      ctx.fillStyle = grad;
+      ctx.fillText(label, startX, cy);
+      if (icon) {
+        ctx.save();
+        ctx.shadowColor = 'rgba(0,0,0,0.35)';
+        ctx.shadowOffsetY = -Math.max(1, px * 0.02);
+        ctx.drawImage(icon, startX + w + gap, cy - iconPx / 2, iconPx, iconPx);
+        ctx.restore();
+      }
+      return total;
+    }
+
+    function fitFont(ctx, lines, basePx, maxW) {
+      let px = basePx;
+      const measure = (p) => {
+        ctx.font = `500 ${p}px 'Times New Roman', Times, serif`;
+        return Math.max(...lines.map((l) => ctx.measureText((l.text || '').toUpperCase()).width + (l.icon ? p * 1.1 : 0)), 0);
+      };
+      while (px > 28 && measure(px) > maxW) px -= 4;
+      return px;
+    }
+
+    function drawCover(st) {
+      const ctx = coverTex.image.getContext('2d');
+      const cw = TEXW, ch = COVH;
+      ctx.clearRect(0, 0, cw, ch);
+      ctx.fillStyle = cfg.colors[st.colorIndex].hex;
+      ctx.fillRect(0, 0, cw, ch);
+      ctx.fillStyle = linenPattern(ctx);
+      ctx.fillRect(0, 0, cw, ch);
+      const vg = ctx.createRadialGradient(cw / 2, ch * 0.4, cw * 0.25, cw / 2, ch / 2, ch * 0.75);
+      vg.addColorStop(0, 'rgba(255,255,255,0.05)');
+      vg.addColorStop(1, 'rgba(0,0,0,0.14)');
+      ctx.fillStyle = vg;
+      ctx.fillRect(0, 0, cw, ch);
+
+      const cIcons = st.coverIcons || [];
+      const lines = (st.coverText || '').split('\n')
+        .map((t, i) => ({ text: t, icon: cIcons[i] || '' }))
+        .filter((l) => (l.text || '').trim().length || l.icon); // mesma regra do Preview 2D
+      if (lines.length) {
+        // P/M reais do Big Pocket: proporção coverP 1.85 / coverM 3.05 (PREVIEW_FS)
+        const base = st.titleSize === 'M' ? 96 : 58;
+        const px = fitFont(ctx, lines, base, cw * 0.8);
+        const lineH = px * 1.32;
+        const cy0 = ch * 0.33 - ((lines.length - 1) * lineH) / 2; // engraving no terço superior, como nas fotos
+        lines.forEach((l, i) => engraveLine(ctx, l.text, l.icon, cw / 2, cy0 + i * lineH, px, st.foilId));
+      }
+      coverTex.needsUpdate = true;
+    }
+
+    function drawSpine(st) {
+      const ctx = spineTex.image.getContext('2d');
+      const cw = 256, ch = COVH;
+      ctx.clearRect(0, 0, cw, ch);
+      ctx.fillStyle = shade(cfg.colors[st.colorIndex].hex, 0.82);
+      ctx.fillRect(0, 0, cw, ch);
+      ctx.fillStyle = linenPattern(ctx);
+      ctx.fillRect(0, 0, cw, ch);
+      const side = (st.sideText || '').trim();
+      if (side || st.sideIcon) {
+        ctx.save();
+        ctx.translate(cw / 2, ch / 2);
+        ctx.rotate(Math.PI / 2); // gravação corre ao longo da lombada
+        engraveLine(ctx, side, st.sideIcon, 0, 0, 64, st.foilId);
+        ctx.restore();
+      }
+      spineTex.needsUpdate = true;
+    }
+
+    function shade(hex, f) {
+      const n = parseInt(hex.slice(1), 16);
+      const r = Math.min(255, Math.round(((n >> 16) & 255) * f));
+      const g = Math.min(255, Math.round(((n >> 8) & 255) * f));
+      const b = Math.min(255, Math.round((n & 255) * f));
+      return `rgb(${r},${g},${b})`;
+    }
+
+    function redraw(st) {
+      drawCover(st);
+      drawSpine(st);
+      const base = cfg.colors[st.colorIndex].hex;
+      coverMats.forEach((m) => {
+        const f = m.userData.role === 'dark' ? 0.72 : 1;
+        m.color.set(new THREE.Color(base).multiplyScalar(f));
+      });
+    }
+
+    function mount(el) {
+      host = el;
+      renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+      renderer.shadowMap.enabled = true;
+      renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+      if ('outputColorSpace' in renderer) renderer.outputColorSpace = THREE.SRGBColorSpace;
+      host.appendChild(renderer.domElement);
+
+      scene = new THREE.Scene();
+      camera = new THREE.PerspectiveCamera(30, 1, 0.1, 50);
+      camera.position.set(0.35, 1.15, 7.4);
+      camera.lookAt(0, -0.1, 0);
+
+      scene.add(new THREE.HemisphereLight(0xffffff, 0x8a8a86, 0.85));
+      const key = new THREE.DirectionalLight(0xffffff, 0.75);
+      key.position.set(2.4, 4.2, 3.4);
+      key.castShadow = true;
+      key.shadow.mapSize.set(1024, 1024);
+      key.shadow.camera.left = -4; key.shadow.camera.right = 4;
+      key.shadow.camera.top = 4; key.shadow.camera.bottom = -4;
+      scene.add(key);
+
+      const cvCover = document.createElement('canvas');
+      cvCover.width = TEXW; cvCover.height = COVH;
+      coverTex = new THREE.CanvasTexture(cvCover);
+      const cvSpine = document.createElement('canvas');
+      cvSpine.width = 256; cvSpine.height = COVH;
+      spineTex = new THREE.CanvasTexture(cvSpine);
+      [coverTex, spineTex].forEach((t) => {
+        if ('colorSpace' in t) t.colorSpace = THREE.SRGBColorSpace;
+        t.anisotropy = renderer.capabilities.getMaxAnisotropy();
+      });
+
+      coverMats = [];
+      const mat = (role) => {
+        const m = new THREE.MeshStandardMaterial({ roughness: 0.74, metalness: 0.04 });
+        m.userData.role = role;
+        coverMats.push(m);
+        return m;
+      };
+      const coverFaceMat = new THREE.MeshStandardMaterial({ map: coverTex, roughness: 0.74, metalness: 0.04 });
+      const spineFaceMat = new THREE.MeshStandardMaterial({ map: spineTex, roughness: 0.74, metalness: 0.04 });
+
+      group = new THREE.Group();
+      const plain = mat('base');
+      const front = new THREE.Mesh(new THREE.BoxGeometry(W, H, CT), [plain, plain, plain, plain, coverFaceMat, mat('dark')]);
+      front.position.z = PT / 2 + CT / 2;
+      const back = new THREE.Mesh(new THREE.BoxGeometry(W, H, CT), mat('dark'));
+      back.position.z = -(PT / 2 + CT / 2);
+      const spineDark = mat('dark');
+      const spine = new THREE.Mesh(new THREE.BoxGeometry(CT, H, PT + CT * 2), [spineDark, spineFaceMat, spineDark, spineDark, spineDark, spineDark]);
+      spine.position.x = -(W / 2 + CT / 2);
+      const pages = new THREE.Mesh(
+        new THREE.BoxGeometry(W - 0.05, H - 0.07, PT),
+        new THREE.MeshStandardMaterial({ color: 0xf2ecdf, roughness: 0.92 })
+      );
+      pages.position.x = -0.015;
+      [front, back, spine, pages].forEach((m) => { m.castShadow = true; m.receiveShadow = true; group.add(m); });
+      scene.add(group);
+
+      const ground = new THREE.Mesh(new THREE.PlaneGeometry(20, 20), new THREE.ShadowMaterial({ opacity: 0.2 }));
+      ground.rotation.x = -Math.PI / 2;
+      ground.position.y = -(H / 2) - 0.32;
+      ground.receiveShadow = true;
+      scene.add(ground);
+
+      const resize = () => {
+        const w = host.clientWidth, hgt = host.clientHeight;
+        if (!w || !hgt) return;
+        renderer.setSize(w, hgt, false);
+        camera.aspect = w / hgt;
+        camera.updateProjectionMatrix();
+      };
+      ro = new ResizeObserver(resize); // o modo config colapsa seções vizinhas — ver risco §5 do mapa
+      ro.observe(host);
+      resize();
+
+      // drag-to-rotate (pointer events; touch-action:none já está no CSS)
+      let px = 0, dragging = false, lastDx = 0;
+      host.addEventListener('pointerdown', (e) => {
+        dragging = true; px = e.clientX; lastDx = 0;
+        host.classList.add('dragging');
+        host.setPointerCapture(e.pointerId);
+      });
+      host.addEventListener('pointermove', (e) => {
+        if (!dragging) return;
+        const dx = e.clientX - px;
+        px = e.clientX; lastDx = dx;
+        spin.try_ += dx * 0.007;
+      });
+      const up = () => {
+        if (!dragging) return;
+        dragging = false;
+        host.classList.remove('dragging');
+        spin.vy = lastDx * 0.004;
+      };
+      host.addEventListener('pointerup', up);
+      host.addEventListener('pointercancel', up);
+
+      const loop = () => {
+        spin.try_ += spin.vy; spin.vy *= 0.94;
+        spin.ry += (spin.try_ - spin.ry) * 0.14;
+        spin.rx += (spin.trx - spin.rx) * 0.14;
+        group.rotation.y = spin.ry;
+        group.rotation.x = spin.rx;
+        renderer.render(scene, camera);
+        raf = requestAnimationFrame(loop);
+      };
+      loop();
+      if (lastState) redraw(lastState);
+    }
+
+    function unmount() {
+      cancelAnimationFrame(raf);
+      if (ro) ro.disconnect();
+      if (renderer) {
+        renderer.dispose();
+        renderer.domElement.remove();
+      }
+      renderer = null;
+    }
+
+    function update(st) {
+      lastState = st;
+      if (renderer) redraw(st);
+    }
+
+    return { mount, unmount, update };
+  })();
+
+  function Preview3D() {
+    const st = useStore();
+    const hostRef = useRef(null);
+    useEffect(() => {
+      Album3D.mount(hostRef.current);
+      return () => Album3D.unmount();
+    }, []);
+    useEffect(() => { Album3D.update(st); }, [st]);
+    return html`
+      <div class="pdp-preview3d" ref=${hostRef}>
+        <div class="pdp-preview3d__hint">Arraste para girar</div>
+      </div>
+    `;
+  }
+
+  // Camada de preview: mesmo contrato do real (ativa quando mode !== 'main');
+  // toggle 3D × 2D para comparação no TDD.
+  function PreviewLayer() {
+    const st = useStore();
+    const [engine, setEngine] = useState('3d');
+    if (st.mode === 'main') return null;
+    return html`
+      <div class="pdp-preview-toggle" role="group" aria-label="Motor do preview">
+        <button aria-pressed=${engine === '3d'} onClick=${() => setEngine('3d')}>3D</button>
+        <button aria-pressed=${engine === '2d'} onClick=${() => setEngine('2d')}>2D atual</button>
+      </div>
+      ${engine === '3d' ? html`<${Preview3D} />` : html`<${Preview2D} />`}
+    `;
+  }
+
+  // ── Mounts — como no real (product-b.liquid:2230–2234) ──
+  render(html`<${App} />`, root);
+  const previewEl = document.getElementById('pdp-preview-layer');
+  if (previewEl) render(html`<${PreviewLayer} />`, previewEl);
+</script>
+</body>
+</html>
