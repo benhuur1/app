@@ -872,7 +872,7 @@
     const TEXW = 1024;
     const W = 2.0, H = 2.8, CT = 0.08, PT = 0.5; // Mini Pocket 5x7cm: miolo proporcionalmente grosso (24 páginas rígidas)
     const COVH = Math.round(TEXW * (H / W)); // altura do canvas da capa
-    let renderer, scene, camera, group, coverTex, spineTex, coverMats, host, ro, raf;
+    let renderer, scene, camera, group, coverTex, spineTex, flapTex, coverMats, host, ro, raf;
     const spin = { rx: 0.08, ry: -0.5, trx: 0.08, try_: -0.5, vy: 0 };
     let lastState = null;
     const iconImgs = {}; // data-URI → Image (mesma origem; sem taint no canvas)
@@ -978,19 +978,41 @@
       ctx.fillStyle = vg;
       ctx.fillRect(0, 0, cw, ch);
 
+      // No Mini a gravação NÃO fica na capa: pelas fotos do produto, ela vive
+      // na aba de fechamento magnético — ver drawFlap().
+      coverTex.needsUpdate = true;
+    }
+
+    // Aba magnética (fotos reais do produto): a gravação corre ao longo da
+    // aba, lendo de cima para baixo, centralizada na largura da aba.
+    function drawFlap(st) {
+      const ctx = flapTex.image.getContext('2d');
+      const cw = 512, ch = COVH;
+      ctx.clearRect(0, 0, cw, ch);
+      ctx.fillStyle = cfg.colors[st.colorIndex].hex;
+      ctx.fillRect(0, 0, cw, ch);
+      ctx.fillStyle = linenPattern(ctx);
+      ctx.fillRect(0, 0, cw, ch);
       const cIcons = st.coverIcons || [];
       const lines = (st.coverText || '').split('\n')
         .map((t, i) => ({ text: t, icon: cIcons[i] || '' }))
-        .filter((l) => (l.text || '').trim().length || l.icon); // mesma regra do Preview 2D
+        .filter((l) => (l.text || '').trim().length || l.icon);
       if (lines.length) {
-        // P/M reais do Big Pocket: proporção coverP 1.85 / coverM 3.05 (PREVIEW_FS)
-        const base = 100; // Mini: tamanho único (coverP 4.75cqw — proporcionalmente maior)
-        const px = fitFont(ctx, lines, base, cw * 0.8);
-        const lineH = px * 1.32;
-        const cy0 = ch * 0.40 - ((lines.length - 1) * lineH) / 2; // PREVIEW_POS.mini: cy 40.6
-        lines.forEach((l, i) => engraveLine(ctx, l.text, l.icon, cw / 2, cy0 + i * lineH, px, st.foilId));
+        ctx.save();
+        ctx.translate(cw / 2, ch / 2);
+        ctx.rotate(Math.PI / 2);
+        const px = fitFont(ctx, lines, 96, ch * 0.8);
+        const lineH = px * 1.35;
+        lines.forEach((l, i) => {
+          const off = (i - (lines.length - 1) / 2) * lineH;
+          ctx.save();
+          ctx.translate(0, off);
+          engraveLine(ctx, l.text, l.icon, 0, 0, px, st.foilId);
+          ctx.restore();
+        });
+        ctx.restore();
       }
-      coverTex.needsUpdate = true;
+      flapTex.needsUpdate = true;
     }
 
     function drawSpine(st) {
@@ -1022,6 +1044,7 @@
 
     function redraw(st) {
       drawCover(st);
+      drawFlap(st);
       drawSpine(st);
       const base = cfg.colors[st.colorIndex].hex;
       coverMats.forEach((m) => {
@@ -1059,7 +1082,10 @@
       const cvSpine = document.createElement('canvas');
       cvSpine.width = 256; cvSpine.height = COVH;
       spineTex = new THREE.CanvasTexture(cvSpine);
-      [coverTex, spineTex].forEach((t) => {
+      const cvFlap = document.createElement('canvas');
+      cvFlap.width = 512; cvFlap.height = COVH;
+      flapTex = new THREE.CanvasTexture(cvFlap);
+      [coverTex, spineTex, flapTex].forEach((t) => {
         if ('colorSpace' in t) t.colorSpace = THREE.SRGBColorSpace;
         t.anisotropy = renderer.capabilities.getMaxAnisotropy();
       });
@@ -1073,6 +1099,7 @@
       };
       const coverFaceMat = new THREE.MeshStandardMaterial({ map: coverTex, roughness: 0.74, metalness: 0.04 });
       const spineFaceMat = new THREE.MeshStandardMaterial({ map: spineTex, roughness: 0.74, metalness: 0.04 });
+      const flapFaceMat = new THREE.MeshStandardMaterial({ map: flapTex, roughness: 0.74, metalness: 0.04 });
 
       group = new THREE.Group();
       const plain = mat('base');
@@ -1088,26 +1115,20 @@
         new THREE.MeshStandardMaterial({ color: 0xf2ecdf, roughness: 0.92 })
       );
       pages.position.x = -0.015;
-      // Fecho magnético: aba fina de linho (espessura de capa) que sai da
-      // contracapa, contorna a borda das páginas e pousa na frente com ponta
-      // arredondada, centralizada na altura — formato típico de fecho
-      // magnético; ajustar comparando com as fotos no toggle "2D atual".
-      const ST = 0.028, SH = 0.56, LEN = 0.52, R = SH / 2;
-      const strapMat = mat('base');
-      const tabShape = new THREE.Shape();
-      tabShape.moveTo(0, R);
-      tabShape.lineTo(-(LEN - R), R);
-      tabShape.absarc(-(LEN - R), 0, R, Math.PI / 2, Math.PI * 1.5, false);
-      tabShape.lineTo(0, -R);
-      tabShape.closePath();
-      const tabGeo = new THREE.ExtrudeGeometry(tabShape, { depth: ST, bevelEnabled: false, curveSegments: 24 });
-      const strapFront = new THREE.Mesh(tabGeo, strapMat);
-      strapFront.position.set(W / 2, 0, PT / 2 + CT);
-      const strapBack = new THREE.Mesh(tabGeo, strapMat);
-      strapBack.position.set(W / 2, 0, -(PT / 2 + CT) - ST);
-      const strapEdge = new THREE.Mesh(new THREE.BoxGeometry(ST, SH, PT + CT * 2 + ST * 2), strapMat);
-      strapEdge.position.set(W / 2 + ST / 2, 0, 0);
-      [front, back, spine, pages, strapFront, strapEdge, strapBack].forEach((m) => { m.castShadow = true; m.receiveShadow = true; group.add(m); });
+      // Aba de fechamento magnético (fotos reais do produto): contínua da
+      // contracapa, envolve a borda das páginas em ALTURA TOTAL e cobre ~57%
+      // da frente; o vinco horizontal das fotos é a borda da aba. A gravação
+      // personalizada vive na face da aba (flapTex), não na capa.
+      const ST = 0.03, FW = 1.15;
+      const flapSide = mat('base');
+      const flapFront = new THREE.Mesh(
+        new THREE.BoxGeometry(FW, H, ST),
+        [flapSide, flapSide, flapSide, flapSide, flapFaceMat, flapSide]
+      );
+      flapFront.position.set(W / 2 - FW / 2, 0, PT / 2 + CT + ST / 2);
+      const flapEdge = new THREE.Mesh(new THREE.BoxGeometry(ST, H, PT + CT * 2 + ST * 2), mat('base'));
+      flapEdge.position.set(W / 2 + ST / 2, 0, 0);
+      [front, back, spine, pages, flapFront, flapEdge].forEach((m) => { m.castShadow = true; m.receiveShadow = true; group.add(m); });
       scene.add(group);
 
       const ground = new THREE.Mesh(new THREE.PlaneGeometry(20, 20), new THREE.ShadowMaterial({ opacity: 0.2 }));
