@@ -31,3 +31,22 @@ Arquivos:
 
 - `index.html` — demo completo (autocontido, sem recursos externos)
 - `three.min.js` — Three.js r152.2 vendorizado (UMD)
+
+## `pdp/` — réplica da PDP variante B com preview 3D
+
+Segunda PoC: reproduz o **código real** da `sections/product-b.liquid` do tema
+(`[AB] pdp-personalizacao-v1`) substituindo apenas o componente `Preview` 2D por
+um álbum 3D. O que é idêntico ao da loja:
+
+- `store` pub/sub, `useStore`, `sanitizeText`, limites por tamanho (`charLimits`),
+  `isLightHex`, âncoras `PREVIEW_POS`/`PREVIEW_FS` — blocos verbatim, com as linhas
+  de origem citadas em comentários
+- O `Preview` 2D atual (verbatim), disponível no toggle "2D atual" para comparação
+- Config com **dados reais da loja** (Admin API): 32 cores de linho, `charLimits`
+  do Big Pocket, variantes/preços, fotos por cor no CDN, símbolos SVG do tema
+- Preact 10.22.0 + htm 3.1.1 (mesmas versões; vendorizados em `pdp/vendor/` em vez
+  do esm.sh usado pela section)
+
+A UI da coluna direita é resumida (sem carrinho/frete/Spotify), mas alimenta os
+mesmos campos de estado que o `App` real espelha no store. No tema, o `Preview3D`
+viraria `assets/album-3d.js` carregado com `import()` quando `mode !== 'main'`.
