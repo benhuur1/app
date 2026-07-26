@@ -999,9 +999,12 @@
         .filter((l) => (l.text || '').trim().length || l.icon);
       if (lines.length) {
         ctx.save();
-        ctx.translate(cw / 2, ch / 2);
+        // Foto do produto: gravação delicada (letras ≈ 4,5% do comprimento),
+        // tracking largo, levemente deslocada para o lado do vinco.
+        ctx.translate(cw * 0.44, ch / 2);
         ctx.rotate(Math.PI / 2);
-        const px = fitFont(ctx, lines, 96, ch * 0.8);
+        try { ctx.letterSpacing = '9px'; } catch (e) { /* sem suporte, segue sem tracking */ }
+        const px = fitFont(ctx, lines, 78, ch * 0.72);
         const lineH = px * 1.35;
         lines.forEach((l, i) => {
           const off = (i - (lines.length - 1) / 2) * lineH;
@@ -1119,7 +1122,7 @@
       // contracapa, envolve a borda das páginas em ALTURA TOTAL e cobre ~57%
       // da frente; o vinco horizontal das fotos é a borda da aba. A gravação
       // personalizada vive na face da aba (flapTex), não na capa.
-      const ST = 0.03, FW = 1.15;
+      const ST = 0.03, FW = 1.26; // vinco a ~63% da borda (medido na foto do produto)
       const flapSide = mat('base');
       const flapFront = new THREE.Mesh(
         new THREE.BoxGeometry(FW, H, ST),
