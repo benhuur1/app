@@ -1088,18 +1088,25 @@
         new THREE.MeshStandardMaterial({ color: 0xf2ecdf, roughness: 0.92 })
       );
       pages.position.x = -0.015;
-      // Fecho magnético (descrição do produto): tira de linho na cor da capa que
-      // sai da contracapa, contorna a borda das páginas e pousa na frente, abaixo
-      // da área de gravação. Posição/tamanho estimados — sem acesso visual às
-      // fotos (egress bloqueado); ajustar comparando com o toggle "2D atual".
-      const ST = 0.05, SH = 0.6, SW = 0.58;
+      // Fecho magnético: aba fina de linho (espessura de capa) que sai da
+      // contracapa, contorna a borda das páginas e pousa na frente com ponta
+      // arredondada, centralizada na altura — formato típico de fecho
+      // magnético; ajustar comparando com as fotos no toggle "2D atual".
+      const ST = 0.028, SH = 0.56, LEN = 0.52, R = SH / 2;
       const strapMat = mat('base');
-      const strapFront = new THREE.Mesh(new THREE.BoxGeometry(SW, SH, ST), strapMat);
-      strapFront.position.set(W / 2 - SW / 2 + 0.02, -0.35, PT / 2 + CT + ST / 2);
+      const tabShape = new THREE.Shape();
+      tabShape.moveTo(0, R);
+      tabShape.lineTo(-(LEN - R), R);
+      tabShape.absarc(-(LEN - R), 0, R, Math.PI / 2, Math.PI * 1.5, false);
+      tabShape.lineTo(0, -R);
+      tabShape.closePath();
+      const tabGeo = new THREE.ExtrudeGeometry(tabShape, { depth: ST, bevelEnabled: false, curveSegments: 24 });
+      const strapFront = new THREE.Mesh(tabGeo, strapMat);
+      strapFront.position.set(W / 2, 0, PT / 2 + CT);
+      const strapBack = new THREE.Mesh(tabGeo, strapMat);
+      strapBack.position.set(W / 2, 0, -(PT / 2 + CT) - ST);
       const strapEdge = new THREE.Mesh(new THREE.BoxGeometry(ST, SH, PT + CT * 2 + ST * 2), strapMat);
-      strapEdge.position.set(W / 2 + ST / 2, -0.35, 0);
-      const strapBack = new THREE.Mesh(new THREE.BoxGeometry(SW, SH, ST), strapMat);
-      strapBack.position.set(W / 2 - SW / 2 + 0.02, -0.35, -(PT / 2 + CT + ST / 2));
+      strapEdge.position.set(W / 2 + ST / 2, 0, 0);
       [front, back, spine, pages, strapFront, strapEdge, strapBack].forEach((m) => { m.castShadow = true; m.receiveShadow = true; group.add(m); });
       scene.add(group);
 
