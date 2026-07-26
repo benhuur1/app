@@ -51,6 +51,27 @@ A UI da coluna direita é resumida (sem carrinho/frete/Spotify), mas alimenta os
 mesmos campos de estado que o `App` real espelha no store. No tema, o `Preview3D`
 viraria `assets/album-3d.js` carregado com `import()` quando `mode !== 'main'`.
 
+### Linha completa (9 produtos)
+
+Todas as réplicas compartilham o mesmo código (store/modais/3D data-driven);
+o que muda por página são os dados reais e o "spec" de geometria:
+
+| Página | Produto | Formato | Capa | Lateral |
+|---|---|---|---|---|
+| `pdp/` | Big Pocket | 15×20 retrato | P23/M17 | P30 |
+| `pdp/classic/` | Classic Pocket | 10×15 retrato | P14/M11 | P26 |
+| `pdp/large/` | Large Pocket | 20×30 retrato | P33/M22/**G17** | P42/**M29** |
+| `pdp/mini/` | Mini Pocket | 5×7 retrato + aba magnética | P11 (na aba) | — |
+| `pdp/table-grande/` | Table Book Grande | 30×40 **paisagem** | P46/M32/G24 | P42/M30 |
+| `pdp/table-midi/` | Table Book Midi | 20×30 **paisagem** | P46/M32/G24 | P35/M24 |
+| `pdp/scrap-grande/` | Scrapbook Grande | 30×40 paisagem | P46/M32/G24 | P42/M30 |
+| `pdp/scrap-midi/` | Scrapbook Midi | 20×30 paisagem | P46/M32/G24 | P35/M24 |
+| `pdp/scrap-short/` | Scrapbook Short | 15×20 retrato | P23/M17 | P30 |
+
+Nota: o metafield `cover_color_previews` da loja tem as fotos da cor Piscina
+TROCADAS entre TB Grande e TB Midi (A3↔A4) — reproduzido fielmente aqui;
+vale corrigir na loja.
+
 ### `pdp/classic/` — Classic Pocket
 
 Classic Pocket 10×15 cm (2:3): capa P:14/M:11 caracteres em até 3 linhas,
