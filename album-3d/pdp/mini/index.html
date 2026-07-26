@@ -906,21 +906,59 @@
       return c;
     }
 
+    // Trama de linho (fotos do produto): tecelagem tipo cesta — células 2×2
+    // alternando fios horizontais e verticais. O mesmo tile alimenta a cor
+    // (padrão translúcido) e o relevo (bumpMap em cinza).
+    const WEAVE_T = 28, WEAVE_C = 14;
+    const WEAVE_SCALE = 1.0; // célula da trama ~1,5mm no produto físico
+    let weaveCanvas = null;
+    function weaveTile() {
+      if (weaveCanvas) return weaveCanvas;
+      const c = document.createElement('canvas');
+      c.width = WEAVE_T; c.height = WEAVE_T;
+      const x = c.getContext('2d');
+      const cell = (cx, cy, horizontal) => {
+        for (let t = 0; t < WEAVE_C; t += 3.5) {
+          if (horizontal) {
+            x.fillStyle = 'rgba(255,255,255,0.16)';
+            x.fillRect(cx, cy + t + 0.5, WEAVE_C, 1.2);
+            x.fillStyle = 'rgba(0,0,0,0.14)';
+            x.fillRect(cx, cy + t + 2.3, WEAVE_C, 1);
+          } else {
+            x.fillStyle = 'rgba(255,255,255,0.13)';
+            x.fillRect(cx + t + 0.5, cy, 1.2, WEAVE_C);
+            x.fillStyle = 'rgba(0,0,0,0.14)';
+            x.fillRect(cx + t + 2.3, cy, 1, WEAVE_C);
+          }
+        }
+        x.fillStyle = 'rgba(0,0,0,0.18)';
+        if (horizontal) { x.fillRect(cx, cy, 1, WEAVE_C); x.fillRect(cx + WEAVE_C - 1, cy, 1, WEAVE_C); }
+        else { x.fillRect(cx, cy, WEAVE_C, 1); x.fillRect(cx, cy + WEAVE_C - 1, WEAVE_C, 1); }
+      };
+      cell(0, 0, true); cell(WEAVE_C, WEAVE_C, true);
+      cell(WEAVE_C, 0, false); cell(0, WEAVE_C, false);
+      weaveCanvas = c;
+      return c;
+    }
     let linen = null;
     function linenPattern(ctx) {
-      if (linen) return linen;
-      const c = document.createElement('canvas');
-      c.width = 128; c.height = 128;
-      const x = c.getContext('2d');
-      x.fillStyle = 'rgba(0,0,0,0)';
-      x.fillRect(0, 0, 128, 128);
-      for (let i = 0; i < 900; i++) {
-        x.fillStyle = (i % 2) ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)';
-        const horizontalThread = i % 3 !== 0;
-        x.fillRect(Math.random() * 128, Math.random() * 128, horizontalThread ? 2.2 : 1, horizontalThread ? 1 : 2.2);
+      if (!linen) {
+        linen = ctx.createPattern(weaveTile(), 'repeat');
+        if (linen.setTransform) linen.setTransform(new DOMMatrix([WEAVE_SCALE, 0, 0, WEAVE_SCALE, 0, 0]));
       }
-      linen = ctx.createPattern(c, 'repeat');
       return linen;
+    }
+    function weaveBumpTexture(repX, repY) {
+      const c = document.createElement('canvas');
+      c.width = WEAVE_T; c.height = WEAVE_T;
+      const x = c.getContext('2d');
+      x.fillStyle = '#808080';
+      x.fillRect(0, 0, WEAVE_T, WEAVE_T);
+      x.drawImage(weaveTile(), 0, 0); // luz/sombra da trama viram alto/baixo relevo
+      const t = new THREE.CanvasTexture(c);
+      t.wrapS = t.wrapT = THREE.RepeatWrapping;
+      t.repeat.set(repX, repY);
+      return t;
     }
 
     function engraveLine(ctx, text, iconName, cx, cy, px, foilId) {
@@ -1095,14 +1133,14 @@
 
       coverMats = [];
       const mat = (role) => {
-        const m = new THREE.MeshStandardMaterial({ roughness: 0.74, metalness: 0.04 });
+        const m = new THREE.MeshStandardMaterial({ roughness: 0.8, metalness: 0.04, bumpMap: weaveBumpTexture(36 / WEAVE_SCALE, 50 / WEAVE_SCALE), bumpScale: 0.45 });
         m.userData.role = role;
         coverMats.push(m);
         return m;
       };
-      const coverFaceMat = new THREE.MeshStandardMaterial({ map: coverTex, roughness: 0.74, metalness: 0.04 });
-      const spineFaceMat = new THREE.MeshStandardMaterial({ map: spineTex, roughness: 0.74, metalness: 0.04 });
-      const flapFaceMat = new THREE.MeshStandardMaterial({ map: flapTex, roughness: 0.74, metalness: 0.04 });
+      const coverFaceMat = new THREE.MeshStandardMaterial({ map: coverTex, roughness: 0.8, metalness: 0.04, bumpMap: weaveBumpTexture(TEXW / WEAVE_T / WEAVE_SCALE, COVH / WEAVE_T / WEAVE_SCALE), bumpScale: 0.45 });
+      const spineFaceMat = new THREE.MeshStandardMaterial({ map: spineTex, roughness: 0.8, metalness: 0.04, bumpMap: weaveBumpTexture(256 / WEAVE_T / WEAVE_SCALE, COVH / WEAVE_T / WEAVE_SCALE), bumpScale: 0.45 });
+      const flapFaceMat = new THREE.MeshStandardMaterial({ map: flapTex, roughness: 0.8, metalness: 0.04, bumpMap: weaveBumpTexture(512 / WEAVE_T / WEAVE_SCALE, COVH / WEAVE_T / WEAVE_SCALE), bumpScale: 0.45 });
 
       group = new THREE.Group();
       const plain = mat('base');
