@@ -50,3 +50,12 @@ um álbum 3D. O que é idêntico ao da loja:
 A UI da coluna direita é resumida (sem carrinho/frete/Spotify), mas alimenta os
 mesmos campos de estado que o `App` real espelha no store. No tema, o `Preview3D`
 viraria `assets/album-3d.js` carregado com `import()` quando `mode !== 'main'`.
+
+### `pdp/mini/` — Mini Pocket
+
+Mesma réplica para o Mini Pocket, exercitando o caminho data-driven do código
+real: `charLimits {cover:{P:11}, spine:{}}` → título único de 11 caracteres,
+sem seletor de tamanho e sem texto/gravação de lateral (`spineMode 0`);
+`maxLines 1` → sem linha extra; geometria menor/mais fina e gravação a ~40%
+da altura (`PREVIEW_POS.mini`). Pendências marcadas no arquivo: fotos por cor,
+foto da galeria e preços reais dependem de nova consulta à Admin API.
