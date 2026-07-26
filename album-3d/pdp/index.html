@@ -202,6 +202,97 @@
   }
   .pdpx-counter { font-size: 11.5px; color: #8a8a8a; align-self: center; min-width: 44px; text-align: right; font-variant-numeric: tabular-nums; }
   .pdpx-back { margin-top: 26px; }
+  /* ── Cards + modais da tela única — VERBATIM/adaptado de product-b.liquid
+     (.pdp-card 3628–3697, .pdp-popup--config 3703–3753) e do chrome base
+     .pdp-popup do assets/pdp-shared.css (centrado no desktop, bottom sheet
+     no mobile). Tokens do critical.css definidos logo abaixo. ── */
+  :root {
+    --pdp-divider: #e5e7eb;
+    --pdp-success-bg: #d5edc3;
+    --pdp-success-fg: #347c00;
+    --color-white: #fff;
+    --color-border: #e5e7eb;
+    --color-text-muted: #6f6f6f;
+    --radius-pill: 999px;
+    --space-md: 16px;
+    --transition-base: 0.15s ease;
+  }
+
+  .pdp-config__hero { display: flex; flex-direction: column; gap: 4px; margin: 6px 0 16px; }
+  .pdp-config__title2 { margin: 0; font-size: 21px; font-weight: 600; letter-spacing: -0.3px; }
+  .pdp-config__sub { margin: 0; font-size: 13px; color: var(--color-text-muted); }
+  .pdp-config__footnote { margin: 12px 0 0; font-size: 13px; color: var(--color-text-muted); text-align: center; }
+
+  .pdp-cards { display: flex; flex-direction: column; gap: 8px; }
+  .pdp-card {
+    display: flex; align-items: center; gap: var(--space-md);
+    width: 100%; min-height: 72px; padding: 14px 17px;
+    background: var(--color-white); border: 1px solid var(--pdp-divider);
+    border-radius: var(--radius-sm); font-family: inherit; color: var(--color-dark);
+    text-align: left; cursor: pointer; transition: border-color var(--transition-base);
+  }
+  .pdp-card:hover, .pdp-card:focus-visible { border-color: var(--color-dark); }
+  .pdp-card__tx { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+  .pdp-card__title { font-size: 15px; font-weight: 600; }
+  .pdp-card__sub { font-size: 13px; color: var(--color-text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .pdp-card__chip {
+    flex: 0 0 auto; font-size: 12px; font-weight: 600; padding: 4px 10px;
+    border-radius: var(--radius-pill); background: var(--pdp-success-bg); color: var(--pdp-success-fg);
+  }
+  .pdp-card__chev { flex: 0 0 auto; width: 16px; height: 16px; color: var(--color-text-muted); }
+
+  .pdp-btn {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    border: 0; cursor: pointer; font-family: inherit; font-weight: 700;
+    letter-spacing: 0.04em; border-radius: var(--radius-pill); padding: 14px 20px;
+  }
+  .pdp-btn--fill { background: var(--color-dark); color: var(--color-white); width: 100%; }
+  .pdp-btn--fill:hover { opacity: 0.9; }
+  .pdp-btn--sm { padding: 12px 16px; font-size: 13px; }
+
+  .pdp-popup {
+    position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    margin: 0; width: min(762px, calc(100vw - 32px)); max-width: none;
+    max-height: calc(100dvh - 48px); padding: 0; border: 0;
+    border-radius: var(--radius-md); background: var(--color-bg-subtle);
+    color: var(--color-dark); overflow: visible;
+  }
+  .pdp-popup[open] { animation: pdp-popup-in 160ms ease; }
+  @keyframes pdp-popup-in { from { opacity: 0; } to { opacity: 1; } }
+  .pdp-popup::backdrop { background: rgb(21 22 22 / 50%); }
+  .pdp-popup__head { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-md); }
+  .pdp-popup__title { margin: 0; font-size: 19px; font-weight: 600; }
+  .pdp-popup__close { flex: 0 0 auto; display: inline-flex; padding: 0; border: 0; background: none; color: var(--color-dark); cursor: pointer; }
+  .pdp-popup__close svg { display: block; width: 24px; height: 24px; }
+
+  .pdp-popup.pdp-popup--config { width: min(560px, calc(100vw - 32px)); }
+  .pdp-popup.pdp-popup--config[open] { display: flex; flex-direction: column; }
+  .pdp-popup__inner.pdp-popup__inner--config {
+    --config-pad-y: 32px; --config-pad-x: 32px;
+    flex: 1 1 auto; min-height: 0; max-height: none; overflow-y: auto;
+    padding: var(--config-pad-y) var(--config-pad-x) 24px;
+    display: flex; flex-direction: column; gap: 20px;
+  }
+  .pdp-popup__inner--config .pdp-popup__head {
+    margin-bottom: 0; position: sticky; top: calc(-1 * var(--config-pad-y)); z-index: 1;
+    margin: calc(-1 * var(--config-pad-y)) calc(-1 * var(--config-pad-x)) 0;
+    padding: var(--config-pad-y) var(--config-pad-x) 12px;
+    background: var(--color-bg-subtle); border-bottom: 1px solid var(--color-border);
+  }
+  .pdp-popup__foot { flex: 0 0 auto; padding: var(--space-md) 32px; border-top: 1px solid var(--color-border); }
+  .pdp-popup__foot .pdp-btn { width: 100%; }
+
+  @keyframes pdp-popup-up { from { transform: translateY(100%); } to { transform: translateY(0); } }
+  @media (width <= 749px) {
+    .pdp-popup {
+      top: auto; bottom: 0; left: 0; transform: none;
+      width: 100vw; max-width: 100vw; max-height: calc(100dvh - 10px);
+      border-radius: var(--radius-md) var(--radius-md) 0 0;
+    }
+    .pdp-popup[open] { animation: pdp-popup-up 280ms ease; }
+    .pdp-popup__inner.pdp-popup__inner--config { --config-pad-y: 24px; --config-pad-x: 20px; }
+  }
+
 </style>
 </head>
 <body>
@@ -241,6 +332,7 @@
 {
   "product": {
     "title": "Big Pocket",
+    "sizeLabel": "Álbum 15x20cm",
     "slug": "big-pocket",
     "basePrice": 59000,
     "previewBase": "https://cdn.shopify.com/s/files/1/0787/3131/3301/files/Big_01_0a7655bd-7325-4b69-bbc5-ef7c32f2d951_900x.jpg?v=1784810488"
@@ -323,6 +415,19 @@
     "symbolsTitle": "Escolha um dos nossos símbolos",
     "symbolsRemove": "Remover",
     "personalizeNow": "PERSONALIZAR AGORA",
+    "configTitle": "Personalize seu álbum",
+    "configFootnote": "Nenhuma etapa é obrigatória agora. Você pode personalizar depois da compra, com calma.",
+    "confirmLabel": "CONFIRMAR",
+    "cardCapaTitle": "Capa",
+    "cardTextoTitle": "Texto",
+    "cardAddTitle": "Adicionais",
+    "cardTextoSub": "Gravação da capa e da lateral",
+    "cardAddSub": "Proteção e música para o seu álbum",
+    "cardDone": "Pronto",
+    "closeLabel": "Fechar",
+    "colorStepTitle": "Escolha a cor",
+    "textStepTitle": "Escolha o texto",
+    "addonsStepTitle": "Escolha os adicionais",
     "nowDesc": "Escolha agora a cor da capa e o texto gravado na frente e na lateral.",
     "installmentsPrefix": "ou em até"
   }
@@ -466,6 +571,54 @@
      Spotify), mas os CAMPOS DE ESTADO e o espelhamento para o store
      são idênticos aos do App real (product-b.liquid:1171–1259).
      ════════════════════════════════════════════════════════════════ */
+
+  // Ícone de fechar dos modais (no tema: icon-x-circle.svg via inline_asset_content)
+  const closeIconSvg = '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="9.25" stroke="currentColor" stroke-width="1.5"/><path d="M9 9l6 6M15 9l-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>';
+
+  // ── ConfigModal — VERBATIM product-b.liquid:1123–1168 ──
+  // Fecha seguindo a prop `open`; × / backdrop / Esc fecham SEM confirmar —
+  // as escolhas continuam aplicadas ao vivo, só o selo do card depende do
+  // Confirmar. Backdrop só fecha com press+release ambos no backdrop.
+  function ConfigModal({ title, open, onClose, onConfirm, children }) {
+    const ref = useRef(null);
+    const pressedBackdrop = useRef(false);
+    const releasedBackdrop = useRef(false);
+    useEffect(() => {
+      const dlg = ref.current;
+      if (!dlg) return;
+      if (open && !dlg.open) {
+        if (typeof dlg.showModal === 'function') dlg.showModal();
+        else dlg.setAttribute('open', '');
+      } else if (!open && dlg.open) {
+        if (typeof dlg.close === 'function') dlg.close();
+        else dlg.removeAttribute('open');
+      }
+    }, [open]);
+    const closeIcoHtml = { __html: closeIconSvg };
+    return html`
+      <dialog
+        ref=${ref}
+        class="pdp-popup pdp-popup--config"
+        aria-label=${title}
+        onPointerDown=${(e) => { pressedBackdrop.current = e.target === ref.current; }}
+        onPointerUp=${(e) => { releasedBackdrop.current = e.target === ref.current; }}
+        onClick=${(e) => { if (e.target === ref.current && pressedBackdrop.current && releasedBackdrop.current) onClose(); }}
+        onClose=${onClose}
+      >
+        <div class="pdp-popup__inner pdp-popup__inner--config">
+          <div class="pdp-popup__head">
+            <h2 class="pdp-popup__title">${title}</h2>
+            <button type="button" class="pdp-popup__close" aria-label=${S.closeLabel} onClick=${onClose} dangerouslySetInnerHTML=${closeIcoHtml}></button>
+          </div>
+          ${open && children}
+        </div>
+        <div class="pdp-popup__foot">
+          <button type="button" class="pdp-btn pdp-btn--fill pdp-btn--sm" onClick=${onConfirm}>${S.confirmLabel}</button>
+        </div>
+      </dialog>
+    `;
+  }
+
   function App() {
     const [mode, setMode] = useState('main');
     const [colorIndex, setColorIndex] = useState(0);
@@ -476,6 +629,8 @@
     const [coverIcons, setCoverIcons] = useState(['']);
     const [sideText, setSideText] = useState('');
     const [sideIcon, setSideIcon] = useState('');
+    const [sheet, setSheet] = useState(null);
+    const [confirmed, setConfirmed] = useState({});
 
     // Espelha para o store — MESMOS campos do App real (product-b.liquid:1247–1259)
     useEffect(() => {
@@ -516,82 +671,123 @@
       `;
     }
 
+    // ── Cards + modais — estrutura VERBATIM product-b.liquid:2104–2153 ──
+    const confirmSheet = (id) => () => { setConfirmed({ ...confirmed, [id]: true }); setSheet(null); };
+    const chevIco = html`<svg class="pdp-card__chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"></path></svg>`;
+    const renderCard = (id, title, sub) => html`
+      <button type="button" class="pdp-card" onClick=${() => setSheet(id)}>
+        <span class="pdp-card__tx">
+          <span class="pdp-card__title">${title}</span>
+          <span class="pdp-card__sub">${sub}</span>
+        </span>
+        ${confirmed[id] && html`<span class="pdp-card__chip">${S.cardDone}</span>`}
+        ${chevIco}
+      </button>
+    `;
+    const filledLines = coverLines.map((l) => l.trim()).filter(Boolean);
+    const textoSub = [...filledLines, sideText.trim()].filter(Boolean).join(' · ') || S.cardTextoSub;
+
     return html`
       <h1>${cfg.product.title}</h1>
-
-      <div class="pdpx-label">${S.colorLabel}<span>${color.label}</span></div>
-      <div class="pdpx-swatches" role="group" aria-label=${S.colorLabel}>
-        ${cfg.colors.map((c, i) => html`
-          <button
-            key=${c.label}
-            class=${'pdpx-swatch' + (i === colorIndex ? ' is-selected' : '')}
-            style=${'background:' + c.hex}
-            title=${c.label}
-            aria-label=${c.label}
-            aria-pressed=${i === colorIndex}
-            onClick=${() => setColorIndex(i)}
-          >${i === colorIndex ? html`<span class="check" style=${'color:' + (isLightHex(c.hex) ? '#151616' : '#fff')}>✓</span>` : ''}</button>
-        `)}
+      <div class="pdp-config__hero">
+        <h2 class="pdp-config__title2">${S.configTitle}</h2>
+        ${cfg.product.sizeLabel && html`<p class="pdp-config__sub">${cfg.product.sizeLabel}</p>`}
       </div>
 
-      <div class="pdpx-label">${S.foilLabel}</div>
-      <div class="pdpx-chiprow">
-        ${cfg.foils.map((f) => html`
-          <button key=${f.id} class="pdpx-chip" aria-pressed=${foilId === f.id} onClick=${() => setFoilId(f.id)}>
-            <span class=${'dot ' + (f.id === 'dourado' ? 'dot--gold' : 'dot--silver')}></span>${f.label}
-          </button>
-        `)}
+      <div class="pdp-cards">
+        ${renderCard('capa', S.cardCapaTitle, color.label)}
+        ${renderCard('texto', S.cardTextoTitle, textoSub)}
+        ${renderCard('adicionais', S.cardAddTitle, S.cardAddSub)}
       </div>
+      <p class="pdp-config__footnote">${S.configFootnote}</p>
 
-      <div class="pdpx-label">${S.titleSizeLabel}<span>${coverLimit(titleSize)} caracteres por linha</span></div>
-      <div class="pdpx-chiprow">
-        ${titleSizes.map((s) => html`
-          <button key=${s} class="pdpx-chip" aria-pressed=${titleSize === s} onClick=${() => onTitleSize(s)}>${s}</button>
-        `)}
-      </div>
+      <${ConfigModal} title=${S.colorStepTitle} open=${sheet === 'capa'} onClose=${() => setSheet(null)} onConfirm=${confirmSheet('capa')}>
+        <div>
+          <div class="pdpx-label">${S.colorLabel}<span>${color.label}</span></div>
+          <div class="pdpx-swatches" role="group" aria-label=${S.colorLabel}>
+            ${cfg.colors.map((c, i) => html`
+              <button
+                key=${c.label}
+                class=${'pdpx-swatch' + (i === colorIndex ? ' is-selected' : '')}
+                style=${'background:' + c.hex}
+                title=${c.label}
+                aria-label=${c.label}
+                aria-pressed=${i === colorIndex}
+                onClick=${() => setColorIndex(i)}
+              >${i === colorIndex ? html`<span class="check" style=${'color:' + (isLightHex(c.hex) ? '#151616' : '#fff')}>✓</span>` : ''}</button>
+            `)}
+          </div>
+        </div>
+      <//>
 
-      <div class="pdpx-label">${S.coverTextLabel}</div>
-      ${coverLines.map((line, i) => html`
-        <div class="pdpx-line" key=${i}>
-          <input
-            type="text"
-            value=${line}
-            placeholder=${i === 0 ? S.coverTextPlaceholder : ''}
-            maxlength=${coverLimit(titleSize)}
-            onInput=${(e) => setCoverLine(i, e.target.value)}
-          />
-          <select value=${coverIcons[i] || ''} aria-label=${S.symbolsTitle}
-            onChange=${(e) => setCoverIcons((ic) => { const n = [...ic]; n[i] = e.target.value; return n; })}>
-            <option value="">— símbolo</option>
-            ${cfg.icons.map((ic) => html`<option key=${ic.name} value=${ic.name}>${ic.label}</option>`)}
-          </select>
-          <span class="pdpx-counter">${line.length}/${coverLimit(titleSize)}</span>
-        </div>
-      `)}
-      ${coverLines.length < maxLines && html`
-        <button class="pdpx-linebtn" onClick=${() => { setCoverLines((ls) => [...ls, '']); setCoverIcons((ic) => [...ic, '']); }}>+ ${S.addLineLabel}</button>
-      `}
-      ${coverLines.length > 1 && html`
-        <button class="pdpx-linebtn" style="margin-left:14px" onClick=${() => { setCoverLines((ls) => ls.slice(0, -1)); setCoverIcons((ic) => ic.slice(0, -1)); }}>− ${S.removeLineLabel}</button>
-      `}
+      <${ConfigModal} title=${S.textStepTitle} open=${sheet === 'texto'} onClose=${() => setSheet(null)} onConfirm=${confirmSheet('texto')}>
+        <div>
+          <div class="pdpx-label">${S.foilLabel}</div>
+          <div class="pdpx-chiprow">
+            ${cfg.foils.map((f) => html`
+              <button key=${f.id} class="pdpx-chip" aria-pressed=${foilId === f.id} onClick=${() => setFoilId(f.id)}>
+                <span class=${'dot ' + (f.id === 'dourado' ? 'dot--gold' : 'dot--silver')}></span>${f.label}
+              </button>
+            `)}
+          </div>
 
-      ${spineMode > 0 && html`
-        <div class="pdpx-label">${S.sideTextLabel}<span>${sideLimit(sideSize)} caracteres</span></div>
-        <div class="pdpx-line">
-          <input type="text" value=${sideText} placeholder=${S.sideTextPlaceholder} maxlength=${sideLimit(sideSize)} onInput=${(e) => onSideText(e.target.value)} />
-          <select value=${sideIcon} aria-label=${S.symbolsTitle} onChange=${(e) => setSideIcon(e.target.value)}>
-            <option value="">— símbolo</option>
-            ${cfg.icons.map((ic) => html`<option key=${ic.name} value=${ic.name}>${ic.label}</option>`)}
-          </select>
-          <span class="pdpx-counter">${sideText.length}/${sideLimit(sideSize)}</span>
+          ${titleSizes.length > 1 && html`
+            <div class="pdpx-label">${S.titleSizeLabel}<span>${coverLimit(titleSize)} caracteres por linha</span></div>
+            <div class="pdpx-chiprow">
+              ${titleSizes.map((s) => html`
+                <button key=${s} class="pdpx-chip" aria-pressed=${titleSize === s} onClick=${() => onTitleSize(s)}>${s}</button>
+              `)}
+            </div>
+          `}
+
+          <div class="pdpx-label">${S.coverTextLabel}${titleSizes.length === 1 && html`<span>${coverLimit(titleSize)} caracteres</span>`}</div>
+          ${coverLines.map((line, i) => html`
+            <div class="pdpx-line" key=${i}>
+              <input
+                type="text"
+                value=${line}
+                placeholder=${i === 0 ? S.coverTextPlaceholder : ''}
+                maxlength=${coverLimit(titleSize)}
+                onInput=${(e) => setCoverLine(i, e.target.value)}
+              />
+              <select value=${coverIcons[i] || ''} aria-label=${S.symbolsTitle}
+                onChange=${(e) => setCoverIcons((ic) => { const n = [...ic]; n[i] = e.target.value; return n; })}>
+                <option value="">— símbolo</option>
+                ${cfg.icons.map((ic) => html`<option key=${ic.name} value=${ic.name}>${ic.label}</option>`)}
+              </select>
+              <span class="pdpx-counter">${line.length}/${coverLimit(titleSize)}</span>
+            </div>
+          `)}
+          ${coverLines.length < maxLines && html`
+            <button class="pdpx-linebtn" onClick=${() => { setCoverLines((ls) => [...ls, '']); setCoverIcons((ic) => [...ic, '']); }}>+ ${S.addLineLabel}</button>
+          `}
+          ${coverLines.length > 1 && html`
+            <button class="pdpx-linebtn" style="margin-left:14px" onClick=${() => { setCoverLines((ls) => ls.slice(0, -1)); setCoverIcons((ic) => ic.slice(0, -1)); }}>− ${S.removeLineLabel}</button>
+          `}
+
+          ${spineMode > 0 && html`
+            <div class="pdpx-label">${S.sideTextLabel}<span>${sideLimit(sideSize)} caracteres</span></div>
+            <div class="pdpx-line">
+              <input type="text" value=${sideText} placeholder=${S.sideTextPlaceholder} maxlength=${sideLimit(sideSize)} onInput=${(e) => onSideText(e.target.value)} />
+              <select value=${sideIcon} aria-label=${S.symbolsTitle} onChange=${(e) => setSideIcon(e.target.value)}>
+                <option value="">— símbolo</option>
+                ${cfg.icons.map((ic) => html`<option key=${ic.name} value=${ic.name}>${ic.label}</option>`)}
+              </select>
+              <span class="pdpx-counter">${sideText.length}/${sideLimit(sideSize)}</span>
+            </div>
+          `}
+          ${spineMode === 2 && html`
+            <div class="pdpx-label">${S.sideSizeLabel}</div>
+            <div class="pdpx-chiprow">
+              ${sideSizes.map((s) => html`<button key=${s} class="pdpx-chip" aria-pressed=${sideSize === s} onClick=${() => setSideSize(s)}>${s}</button>`)}
+            </div>
+          `}
         </div>
-      `}
-      ${spineMode === 2 && html`
-        <div class="pdpx-label">${S.sideSizeLabel}</div>
-        <div class="pdpx-chiprow">
-          ${sideSizes.map((s) => html`<button key=${s} class="pdpx-chip" aria-pressed=${sideSize === s} onClick=${() => setSideSize(s)}>${s}</button>`)}
-        </div>
-      `}
+      <//>
+
+      <${ConfigModal} title=${S.addonsStepTitle} open=${sheet === 'adicionais'} onClose=${() => setSheet(null)} onConfirm=${confirmSheet('adicionais')}>
+        <p class="pdp-config__footnote" style="text-align:left;margin:0">${S.cardAddSub} — fora do escopo desta PoC de preview 3D (proteção, música e linha extra não afetam o álbum renderizado).</p>
+      <//>
 
       <div class="pdpx-back"><button class="pdpx-linebtn" onClick=${() => setMode('main')}>← Voltar para a galeria</button></div>
     `;
@@ -674,7 +870,7 @@
      ════════════════════════════════════════════════════════════════ */
   const Album3D = (() => {
     const TEXW = 1024;
-    const W = 2.35, H = 3.05, CT = 0.09, PT = 0.5; // proporção retrato do Pocket
+    const W = 2.3, H = 3.07, CT = 0.09, PT = 0.5; // Big Pocket 15x20cm (3:4)
     const COVH = Math.round(TEXW * (H / W)); // altura do canvas da capa
     let renderer, scene, camera, group, coverTex, spineTex, coverMats, host, ro, raf;
     const spin = { rx: 0.08, ry: -0.5, trx: 0.08, try_: -0.5, vy: 0 };
