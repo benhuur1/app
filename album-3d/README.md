@@ -51,6 +51,14 @@ A UI da coluna direita é resumida (sem carrinho/frete/Spotify), mas alimenta os
 mesmos campos de estado que o `App` real espelha no store. No tema, o `Preview3D`
 viraria `assets/album-3d.js` carregado com `import()` quando `mode !== 'main'`.
 
+### `pdp/classic/` — Classic Pocket
+
+Classic Pocket 10×15 cm (2:3): capa P:14/M:11 caracteres em até 3 linhas,
+lateral P:26 (com gravação na lombada), variantes 20/35/50 fotos e as 32
+fotos por cor `PKTBKCLASSIC-*` no toggle 2D. Fontes de gravação seguem a
+proporção real `PREVIEW_FS['classic-pocket']` (coverP 2.5 / coverM 3.66 /
+spineP 2.4).
+
 ### `pdp/mini/` — Mini Pocket
 
 Mesma réplica para o Mini Pocket, exercitando o caminho data-driven do código
