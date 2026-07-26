@@ -894,7 +894,19 @@
         new THREE.MeshStandardMaterial({ color: 0xf2ecdf, roughness: 0.92 })
       );
       pages.position.x = -0.015;
-      [front, back, spine, pages].forEach((m) => { m.castShadow = true; m.receiveShadow = true; group.add(m); });
+      // Fecho magnético (descrição do produto): tira de linho na cor da capa que
+      // sai da contracapa, contorna a borda das páginas e pousa na frente, abaixo
+      // da área de gravação. Posição/tamanho estimados — sem acesso visual às
+      // fotos (egress bloqueado); ajustar comparando com o toggle "2D atual".
+      const ST = 0.05, SH = 0.6, SW = 0.58;
+      const strapMat = mat('base');
+      const strapFront = new THREE.Mesh(new THREE.BoxGeometry(SW, SH, ST), strapMat);
+      strapFront.position.set(W / 2 - SW / 2 + 0.02, -0.35, PT / 2 + CT + ST / 2);
+      const strapEdge = new THREE.Mesh(new THREE.BoxGeometry(ST, SH, PT + CT * 2 + ST * 2), strapMat);
+      strapEdge.position.set(W / 2 + ST / 2, -0.35, 0);
+      const strapBack = new THREE.Mesh(new THREE.BoxGeometry(SW, SH, ST), strapMat);
+      strapBack.position.set(W / 2 - SW / 2 + 0.02, -0.35, -(PT / 2 + CT + ST / 2));
+      [front, back, spine, pages, strapFront, strapEdge, strapBack].forEach((m) => { m.castShadow = true; m.receiveShadow = true; group.add(m); });
       scene.add(group);
 
       const ground = new THREE.Mesh(new THREE.PlaneGeometry(20, 20), new THREE.ShadowMaterial({ opacity: 0.2 }));
