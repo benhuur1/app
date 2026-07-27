@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Harness — album-3d.js isolado</title>
+<style>
+  body { margin: 0; font-family: ui-sans-serif, system-ui, sans-serif; background: #fff; color: #151616; }
+  .bar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding: 12px 16px; border-bottom: 1px solid #e5e7eb; font-size: 13px; }
+  .bar button, .bar input, .bar select { font: inherit; padding: 6px 10px; border: 1px solid #d9d9d9; border-radius: 8px; background: #fff; cursor: pointer; }
+  #stage { position: relative; width: min(640px, 96vw); aspect-ratio: 10 / 9; margin: 20px auto; background: #f4f4f4; border-radius: 12px; overflow: hidden; }
+  /* réplica da layer real: pointer-events none — o módulo reativa no wrapper */
+  #pdp-preview-layer { position: absolute; inset: 0; pointer-events: none; }
+</style>
+</head>
+<body>
+<div class="bar">
+  <b>album-3d.js isolado</b>
+  <select id="handle">
+    <option value="big-pocket">big-pocket</option>
+    <option value="classic-pocket">classic-pocket</option>
+    <option value="large-pocket">large-pocket</option>
+    <option value="mini-pocket">mini-pocket</option>
+    <option value="table-book-a3">table-book-a3</option>
+    <option value="table-book-a4">table-book-a4</option>
+    <option value="scrap-book-a5">scrap-book-a5</option>
+  </select>
+  <button id="color">Trocar cor</button>
+  <input id="text" placeholder="Texto da capa" value="Helena">
+  <input id="side" placeholder="Lateral">
+  <button id="foil">Foil: prata</button>
+  <button id="mode">mode: config</button>
+</div>
+<div id="stage"><div id="pdp-preview-layer"></div></div>
+
+<script src="../three.min.js"></script>
+<script type="module">
+  import { mountAlbum3D } from './assets/album-3d.js';
+
+  // store fake com o MESMO shape do real (product-b.liquid:758–774)
+  const store = {
+    state: { mode: 'config', colorIndex: 0, foilId: 'prata', coverText: 'Helena', coverIcons: [], sideText: '', titleSize: 'M', sideSize: 'P', sideIcon: '' },
+    subs: new Set(),
+    set(patch) {
+      this.state = Object.assign({}, this.state, patch);
+      this.subs.forEach((fn) => fn(this.state));
+    },
+  };
+  const cfg = {
+    product: { slug: 'big-pocket' },
+    colors: [
+      { label: 'Piscina', hex: '#b7e5e0' },
+      { label: 'Cereja', hex: '#990c16' },
+      { label: 'Mostarda', hex: '#b87828' },
+      { label: 'Verde Alecrim', hex: '#3a5449' },
+      { label: 'Off White', hex: '#fbf1d9' },
+    ],
+    icons: [],
+  };
+
+  let engine = null;
+  async function boot(handle) {
+    if (engine) engine.destroy();
+    cfg.product.slug = handle;
+    engine = await mountAlbum3D({
+      host: document.getElementById('pdp-preview-layer'),
+      store, cfg, handle,
+    });
+  }
+  await boot('big-pocket');
+  window.__engineReady = true; // hook para o teste automatizado
+
+  let ci = 0;
+  document.getElementById('handle').onchange = (e) => boot(e.target.value);
+  document.getElementById('color').onclick = () => store.set({ colorIndex: (ci = (ci + 1) % cfg.colors.length) });
+  document.getElementById('text').oninput = (e) => store.set({ coverText: e.target.value });
+  document.getElementById('side').oninput = (e) => store.set({ sideText: e.target.value });
+  document.getElementById('foil').onclick = (e) => {
+    const next = store.state.foilId === 'prata' ? 'dourado' : 'prata';
+    store.set({ foilId: next });
+    e.target.textContent = 'Foil: ' + next;
+  };
+  document.getElementById('mode').onclick = (e) => {
+    const next = store.state.mode === 'main' ? 'config' : 'main';
+    store.set({ mode: next });
+    e.target.textContent = 'mode: ' + next;
+  };
+</script>
+</body>
+</html>
