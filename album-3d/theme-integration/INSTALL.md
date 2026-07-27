@@ -17,7 +17,31 @@ já usa para o Preact). Para self-host, suba também um `assets/three.min.js`
 (r152 UMD — há uma cópia em `album-3d/three.min.js` deste repo) e carregue-o
 antes; o módulo encontra o `window.THREE` sozinho.
 
-## 2. Diff mínimo na section (`sections/product-b.liquid`)
+## 2. Aplicar o patch da section
+
+Há um patch pronto (`product-b.liquid.patch`), gerado contra a revisão de
+225.585 bytes (23/07 16:18) da section no tema [AB] — 2 hunks, 24 linhas:
+
+```sh
+cd ~/flavianasser/shopify-theme
+git apply --3way /caminho/para/product-b.liquid.patch
+# ou, se preferir sem git:  patch -p1 < product-b.liquid.patch
+```
+
+Se sua cópia local divergiu da revisão do tema, o `--3way` resolve a maioria
+dos casos; senão, aplique o diff à mão pelo passo 2b abaixo.
+
+Rodar em dev:
+
+```sh
+shopify theme dev --store flavianasser        # PDP real, fotos reais, carrinho real
+```
+
+Verificado antes de publicar o patch: o módulo resultante passa em
+`node --check` (com as tags Liquid neutralizadas) e não introduz nenhuma
+ocorrência de `${{` — a sequência que quebra o upload do Liquid (FN-922).
+
+## 2b. O diff, para aplicar à mão
 
 **a) URL do asset** — junto dos outros asset consts (perto da l.694,
 `ddbGiftIconUrl`):

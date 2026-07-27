@@ -1,0 +1,43 @@
+--- a/sections/product-b.liquid
++++ b/sections/product-b.liquid
+@@ -692,6 +692,7 @@
+           const BRL = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
+           const money = (cents) => BRL.format((cents || 0) / 100);
+           const ddbGiftIconUrl = {{ 'icon-gift.svg' | asset_url | json }};
++          const ALBUM3D_URL = {{ 'album-3d.js' | asset_url | json }};
+           // Same close glyph the static popups render via inline_asset_content —
+           // one source of truth for the icon across every dialog on this PDP.
+           const closeIconSvg = {{ 'icon-x-circle.svg' | inline_asset_content | json }};
+@@ -2230,8 +2231,31 @@
+           root.removeAttribute('data-loading');
+           render(html`<${App} />`, root);
+ 
++          // Preview do álbum: 3D (assets/album-3d.js) no lugar do Preview 2D.
++          // Carrega adiado — só na primeira entrada no modo config, portanto
++          // fora do caminho do LCP (a galeria de fotos é server-rendered).
++          // Qualquer falha (import bloqueado, WebGL indisponível) cai no
++          // Preview 2D de sempre; para reverter, basta voltar a linha
++          // `render(html`<${Preview} />`, previewEl);` e apagar este bloco.
+           const previewEl = document.getElementById('pdp-preview-layer');
+-          if (previewEl) render(html`<${Preview} />`, previewEl);
++          if (previewEl) {
++            let album3d = null;
++            let album3dFailed = false;
++            const boot3D = (s) => {
++              if (s.mode === 'main' || album3d || album3dFailed) return;
++              album3d = 'loading';
++              import(ALBUM3D_URL)
++                .then((mod) => mod.mountAlbum3D({ host: previewEl, store, cfg, handle: cfg.product.slug }))
++                .then((engine) => { album3d = engine; })
++                .catch(() => {
++                  album3dFailed = true;
++                  album3d = null;
++                  render(html`<${Preview} />`, previewEl);
++                });
++            };
++            store.subs.add(boot3D);
++            boot3D(store.state);
++          }
+         </script>
+ 
+       {%- else -%}
