@@ -44,10 +44,13 @@ export async function mountAlbum3D(opts) {
   const THREE = opts.THREE || window.THREE || (await import(ESM_THREE));
   const { host, store, cfg } = opts;
   const spec = SPECS[opts.handle] || SPECS[cfg && cfg.product && cfg.product.slug] || SPECS['big-pocket'];
-  return createEngine(THREE, host, store, cfg, spec);
+  // alwaysVisible: por padrão o 3D só aparece no modo config (no 'main' quem
+  // manda é a galeria de fotos). Ligue quando não houver galeria por trás —
+  // ex.: vitrines/demos sem as fotos do CDN.
+  return createEngine(THREE, host, store, cfg, spec, !!opts.alwaysVisible);
 }
 
-function createEngine(THREE, host, store, cfg, spec) {
+function createEngine(THREE, host, store, cfg, spec, alwaysVisible) {
   const { W, H, CT, PT } = spec;
   const TEXW = 1024;
   const COVH = Math.round(TEXW * (H / W));
@@ -554,8 +557,9 @@ function createEngine(THREE, host, store, cfg, spec) {
   // ── contrato com o store da section ──
   const onState = (s) => {
     lastState = s;
-    wrap.style.display = s.mode === 'main' ? 'none' : 'block';
-    if (s.mode !== 'main') {
+    const visible = alwaysVisible || s.mode !== 'main';
+    wrap.style.display = visible ? 'block' : 'none';
+    if (visible) {
       redraw(s);
       resize();
     }
